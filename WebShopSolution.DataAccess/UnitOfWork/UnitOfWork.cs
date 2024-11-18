@@ -19,7 +19,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
         public ICustomerRepository Customers { get; }
         public IOrderRepository Orders { get; }
         
-
+        //KOlla hur man ska lägga till generisk repo här
 
 
         private readonly ProductSubject _productSubject;
