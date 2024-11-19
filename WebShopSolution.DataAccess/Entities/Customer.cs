@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopSolution.DataAccess.Entities;
 
 public class Customer: IEntity
 {
+    [Key]
     public int  Id { get; set; }
     public string FirstName { get; set; }
 

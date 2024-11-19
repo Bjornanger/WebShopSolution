@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories.Products;
@@ -31,17 +32,8 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
 
-            Product newProduct = new Product
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Stock = product.Stock,
-                OrderProducts = []
-            };
-
-
-            await productRepository.AddAsync(newProduct);
+            
+            await productRepository.AddAsync(product);
 
 
             // Sparar förändringar
@@ -60,11 +52,35 @@ namespace WebShop.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
+            
             var productRepository = _unitOfWork.Repository<Product>();
 
-            var productList = await productRepository.GetAllAsync();
+            if (productRepository is null)
+                return null;
 
-            return Ok(productList);
+            try
+            {
+              var productList = await productRepository.GetAllAsync();
+
+              if (productList is null)
+              {
+                  return null;
+              }
+              else
+              {
+                  return Ok(productList);
+              }
+
+
+            }
+            catch (Exception e)
+            {
+                _unitOfWork.Dispose();
+                Console.WriteLine(e.Message);
+            }
+
+            return Ok();
+
         }
 
 
@@ -72,16 +88,26 @@ namespace WebShop.Controllers
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
             var productRepository = _unitOfWork.Repository<Product>();
+            if (productRepository is null)
+                return null;
 
-
-            var product = await productRepository.GetByIdAsync(id);
-
-            if (product is null)
+            try
             {
-                return NotFound();
-            }
+                var product = await productRepository.GetByIdAsync(id);
 
-            return Ok(product);
+                if (product is null)
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                _unitOfWork.Dispose();
+                Console.WriteLine(e);
+                
+            }
+            
+            return Ok();
         }
 
 

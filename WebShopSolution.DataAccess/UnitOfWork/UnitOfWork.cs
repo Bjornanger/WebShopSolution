@@ -61,9 +61,9 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             await _context.SaveChangesAsync();
         }
 
-        public void Dispose()
+        public async void Dispose()
         {
-          _context.Dispose();
+           _context.Dispose();
         }
         
 
