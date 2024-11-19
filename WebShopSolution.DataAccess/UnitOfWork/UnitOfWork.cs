@@ -13,39 +13,48 @@ namespace WebShopSolution.DataAccess.UnitOfWork
     {
         // Hämta repository
         private readonly MyDbContext _context;
-
-
-        public IProductRepository Products { get; }
-        public ICustomerRepository Customers { get; }
-        public IOrderRepository Orders { get; }
         
-        //KOlla hur man ska lägga till generisk repo här
+        
+        //Kolla hur man ska lägga till generisk repo här
 
+        public IRepositoryFactory _repositoryFactory { get; }
+        private readonly Dictionary<Type, object> _repositories;
 
         private readonly ProductSubject _productSubject;
 
 
 
         // Konstruktor används för tillfället av Observer pattern
-        public UnitOfWork(MyDbContext context, ProductSubject productSubject= null)
+        //ProductSubject productSubject= null
+        public UnitOfWork(MyDbContext context, IRepositoryFactory factory )
         {
 
             _context = context;
+            _repositoryFactory = factory;
+            _repositories = new Dictionary<Type, object>();
 
-            Products = new ProductRepository(_context);
-            Orders = new OrderRepository(_context);
-            Customers = new CustomerRepository(_context);
-
-            
 
             // Om inget ProductSubject injiceras, skapa ett nytt
-            _productSubject = productSubject ?? new ProductSubject();
+            //_productSubject = productSubject ?? new ProductSubject();
 
             // Registrera standardobservatörer
-            _productSubject.Attach(new EmailNotification());
+            //_productSubject.Attach(new EmailNotification());
         }
 
-      
+        //Denna metod hanterar vilken typ av Entity som kommer in och returnerar rätt repository
+        public IRepository<TEntity> Repository<TEntity>() where TEntity : class
+        {
+            if (_repositories.TryGetValue(typeof(TEntity), out var existingRepository))
+            {
+                return (IRepository<TEntity>)existingRepository;
+            }
+
+            var repository = _repositoryFactory.GetSpecificRepository<TEntity>();
+            _repositories[typeof(TEntity)] = repository;
+            return repository;
+        }
+
+
 
         public async Task CompleteAsync()
         {
@@ -63,6 +72,6 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             _productSubject.Notify(product);
         }
 
-      
+       
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebShopSolution.DataAccess.Entities;
+using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
 
 namespace WebShop.Controllers
@@ -22,6 +23,9 @@ namespace WebShop.Controllers
         {
             // Lägger till produkten via repository
 
+            var productRepository = _unitOfWork.Repository<Product>();
+
+
             if (product is null)
             {
                 return BadRequest();
@@ -37,7 +41,7 @@ namespace WebShop.Controllers
             };
 
 
-            _unitOfWork.Products.AddAsync(newProduct);
+            await productRepository.AddAsync(newProduct);
 
 
             // Sparar förändringar
@@ -46,7 +50,7 @@ namespace WebShop.Controllers
             // Notifierar observatörer om att en ny produkt har lagts till
 
 
-            _unitOfWork.NotifyProductAdded(newProduct);
+            //_unitOfWork.NotifyProductAdded(newProduct);
 
             return Ok();
         }
@@ -56,7 +60,9 @@ namespace WebShop.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-           var productList = await _unitOfWork.Products.GetAllAsync();
+            var productRepository = _unitOfWork.Repository<Product>();
+
+            var productList = await productRepository.GetAllAsync();
 
             return Ok(productList);
         }
@@ -65,7 +71,10 @@ namespace WebShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            var productRepository = _unitOfWork.Repository<Product>();
+
+
+            var product = await productRepository.GetByIdAsync(id);
 
             if (product is null)
             {
@@ -79,7 +88,11 @@ namespace WebShop.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
-            var productToUpdate = await _unitOfWork.Products.GetByIdAsync(id);
+
+            var productRepository = _unitOfWork.Repository<Product>();
+
+
+            var productToUpdate = await productRepository.GetByIdAsync(id);
 
             if (productToUpdate is null)
             {
@@ -90,7 +103,7 @@ namespace WebShop.Controllers
             productToUpdate.Price = product.Price;
             productToUpdate.Stock = product.Stock;
 
-            _unitOfWork.Products.UpdateAsync(productToUpdate);
+            await productRepository.UpdateAsync(productToUpdate);
 
             await _unitOfWork.CompleteAsync();
 
@@ -101,14 +114,17 @@ namespace WebShop.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(id);
+
+            var productRepository = _unitOfWork.Repository<Product>();
+
+            var product = await productRepository.GetByIdAsync(id);
 
             if (product is null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.Products.RemoveAsync(id);
+            await productRepository.RemoveAsync(id);
 
             await _unitOfWork.CompleteAsync();
 

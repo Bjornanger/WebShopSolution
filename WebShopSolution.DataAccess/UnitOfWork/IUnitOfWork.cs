@@ -1,4 +1,5 @@
-﻿using WebShopSolution.DataAccess.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Orders;
@@ -9,18 +10,11 @@ namespace WebShopSolution.DataAccess.UnitOfWork
     // Gränssnitt för Unit of Work
     public interface IUnitOfWork : IDisposable
     {
-        // Repository för produkter, Customers, Orders
-
-        IProductRepository Products { get; }
-        ICustomerRepository Customers { get; }
-        IOrderRepository Orders { get; }
-
-        Task CompleteAsync();
-
+        IRepository<TEntity> Repository<TEntity>() where TEntity : class;
 
         // Sparar förändringar (om du använder en databas)
+        Task CompleteAsync();
 
-        
 
         void NotifyProductAdded(Product product); // Notifierar observatörer om ny produkt
     }

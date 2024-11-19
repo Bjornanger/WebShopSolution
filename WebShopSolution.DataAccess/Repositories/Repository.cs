@@ -5,39 +5,39 @@ using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopSolution.DataAccess.Repositories;
 
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
 
     //Consume db Context
     private readonly MyDbContext _context;
 
-    private readonly DbSet<T> _dbSet;
+    private readonly DbSet<TEntity> _dbSet;
 
 
     public Repository(MyDbContext context)
     {
         this._context = context;
-        this._dbSet = _context.Set<T>();
+        this._dbSet = _context.Set<TEntity>();
     }
 
-    public async Task<T> GetByIdAsync(int id)
+    public async Task<TEntity> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
 
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();
         
     }
 
-    public async Task AddAsync(T entity)
+    public async Task AddAsync(TEntity entity)
     {
        await _dbSet.AddAsync(entity);
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task UpdateAsync(TEntity entity)
     {
        _dbSet.Update(entity);
 
@@ -46,7 +46,6 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task RemoveAsync(int id)
     {
       _dbSet.Remove(await GetByIdAsync(id));
-
         
     }
 }
