@@ -22,27 +22,25 @@ namespace WebShop.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct([FromBody] Product product)
         {
-
             if (!ModelState.IsValid)
                 return BadRequest();
 
             if (product is null)
                 return BadRequest();
-
-
-            var productRepository = _unitOfWork.Repository<Product>();
-            if (productRepository is null)
-                return NotFound();
-
+           
             try
             {
-                await productRepository.AddAsync(product);
+                var productRepository = _unitOfWork.Repository<Product>();
+                //if (productRepository is null)
+                //    return NotFound();
+
+
+                productRepository.AddAsync(product);//Endast denna ska testas
+                
+
                 await _unitOfWork.CompleteAsync();
                 return Ok();
-
-
                 // Notifierar observatörer om att en ny produkt har lagts till
-
                 //_unitOfWork.NotifyProductAdded(newProduct);
 
 
@@ -55,9 +53,8 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
 
+
         }
-
-
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
@@ -90,18 +87,15 @@ namespace WebShop.Controllers
 
         }
 
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
 
-
-            var productRepository = _unitOfWork.Repository<Product>();
-            if (productRepository is null)
-                return NotFound();
-
+            
             try
             {
+                var productRepository = _unitOfWork.Repository<Product>();
+                
                 var product = await productRepository.GetByIdAsync(id);
 
                 if (product is null)
@@ -121,9 +115,6 @@ namespace WebShop.Controllers
 
         }
 
-
-
-
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
@@ -135,11 +126,11 @@ namespace WebShop.Controllers
             if (product is null)
                 return BadRequest();
 
-            
+
             var productRepository = _unitOfWork.Repository<Product>();
             if (productRepository is null)
                 return NotFound();
-            
+
             try
             {
                 var productToUpdate = await productRepository.GetByIdAsync(id);
@@ -165,7 +156,7 @@ namespace WebShop.Controllers
                 Console.WriteLine(e);
                 return StatusCode(500, "Internal server error");
             }
-            
+
 
         }
 
@@ -176,18 +167,34 @@ namespace WebShop.Controllers
 
             var productRepository = _unitOfWork.Repository<Product>();
 
-            var product = await productRepository.GetByIdAsync(id);
 
-            if (product is null)
+
+            try
             {
-                return NotFound();
+                var product = await productRepository.GetByIdAsync(id);
+                if (product is null)
+                {
+                    return NotFound();
+                }
+
+                await productRepository.RemoveAsync(id);
+
+                await _unitOfWork.CompleteAsync();
+
+                return StatusCode(200, "Ok");
+            }
+            catch (Exception e)
+            {
+                _unitOfWork.Dispose();
+                Console.WriteLine(e);
+                return StatusCode(500, "Internal server error");
             }
 
-            await productRepository.RemoveAsync(id);
 
-            await _unitOfWork.CompleteAsync();
 
-            return Ok();
+
+
+
         }
 
     }

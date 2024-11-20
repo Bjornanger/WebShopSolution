@@ -40,12 +40,12 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public async Task UpdateAsync(TEntity entity)
     {
        _dbSet.Update(entity);
-
+       
     }
 
     public async Task RemoveAsync(int id)
     {
       _dbSet.Remove(await GetByIdAsync(id));
-        
+      
     }
 }

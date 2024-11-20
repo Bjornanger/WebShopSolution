@@ -11,7 +11,7 @@ using WebShopSolution.DataAccess.Data;
 namespace WebShopSolution.DataAccess.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241118105715_Init")]
+    [Migration("20241120150659_Init")]
     partial class Init
     {
         /// <inheritdoc />

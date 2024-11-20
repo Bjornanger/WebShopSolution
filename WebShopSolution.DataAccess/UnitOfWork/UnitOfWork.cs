@@ -71,7 +71,6 @@ namespace WebShopSolution.DataAccess.UnitOfWork
         {
             _productSubject.Notify(product);
         }
-
        
     }
 }

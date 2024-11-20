@@ -9,6 +9,7 @@ namespace WebShopSolution.DataAccess.Entities
     {
         [Key]
         public int Id { get; set; } // Unikt ID för produkten
+        [Required,MinLength(3)]
         public string Name { get; set; } // Namn på produkten
         public double Price { get; set; }
         public int Stock { get; set; }

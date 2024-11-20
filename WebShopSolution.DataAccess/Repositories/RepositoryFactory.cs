@@ -23,6 +23,9 @@ public class RepositoryFactory() : IRepositoryFactory
             return (IRepository<TEntity>)
                 new ProductRepository(_context);
 
+
+
+
         return new Repository<TEntity>(_context);
 
     }
