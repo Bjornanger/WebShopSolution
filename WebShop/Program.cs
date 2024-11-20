@@ -19,6 +19,7 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 
 builder.Services.AddControllers();
 // Registrera Unit of Work i DI-container
+
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<INotificationObserver, EmailNotification>();

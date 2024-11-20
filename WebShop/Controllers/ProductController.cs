@@ -22,29 +22,39 @@ namespace WebShop.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct([FromBody] Product product)
         {
-            // Lägger till produkten via repository
 
-            var productRepository = _unitOfWork.Repository<Product>();
-
+            if (!ModelState.IsValid)
+                return BadRequest();
 
             if (product is null)
-            {
                 return BadRequest();
+
+
+            var productRepository = _unitOfWork.Repository<Product>();
+            if (productRepository is null)
+                return NotFound();
+
+            try
+            {
+                await productRepository.AddAsync(product);
+                await _unitOfWork.CompleteAsync();
+                return Ok();
+
+
+                // Notifierar observatörer om att en ny produkt har lagts till
+
+                //_unitOfWork.NotifyProductAdded(newProduct);
+
+
+            }
+            catch (Exception e)
+            {
+
+                _unitOfWork.Dispose();
+                Console.WriteLine(e);
+                return StatusCode(500, "Internal server error");
             }
 
-            
-            await productRepository.AddAsync(product);
-
-
-            // Sparar förändringar
-            await _unitOfWork.CompleteAsync();
-
-            // Notifierar observatörer om att en ny produkt har lagts till
-
-
-            //_unitOfWork.NotifyProductAdded(newProduct);
-
-            return Ok();
         }
 
 
@@ -52,34 +62,31 @@ namespace WebShop.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            
+
             var productRepository = _unitOfWork.Repository<Product>();
 
             if (productRepository is null)
-                return null;
+                return NotFound();
+
 
             try
             {
-              var productList = await productRepository.GetAllAsync();
+                var productList = await productRepository.GetAllAsync();
 
-              if (productList is null)
-              {
-                  return null;
-              }
-              else
-              {
-                  return Ok(productList);
-              }
+                if (productList is null || !productList.Any())
+                {
+                    return NotFound();
+                }
 
+                return Ok(productList);
 
             }
             catch (Exception e)
             {
                 _unitOfWork.Dispose();
                 Console.WriteLine(e.Message);
+                return StatusCode(500, "Internal server error");
             }
-
-            return Ok();
 
         }
 
@@ -87,9 +94,11 @@ namespace WebShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
+
+
             var productRepository = _unitOfWork.Repository<Product>();
             if (productRepository is null)
-                return null;
+                return NotFound();
 
             try
             {
@@ -97,43 +106,67 @@ namespace WebShop.Controllers
 
                 if (product is null)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
+
+                return Ok(product);
             }
             catch (Exception e)
             {
                 _unitOfWork.Dispose();
                 Console.WriteLine(e);
-                
+                return StatusCode(500, "Internal server error");
             }
-            
-            return Ok();
+
+
         }
+
+
 
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
 
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+
+            if (product is null)
+                return BadRequest();
+
+            
             var productRepository = _unitOfWork.Repository<Product>();
-
-
-            var productToUpdate = await productRepository.GetByIdAsync(id);
-
-            if (productToUpdate is null)
-            {
+            if (productRepository is null)
                 return NotFound();
+            
+            try
+            {
+                var productToUpdate = await productRepository.GetByIdAsync(id);
+
+                if (productToUpdate is null)
+                {
+                    return NotFound();
+                }
+
+                productToUpdate.Name = product.Name;
+                productToUpdate.Price = product.Price;
+                productToUpdate.Stock = product.Stock;
+
+                await productRepository.UpdateAsync(productToUpdate);
+
+                await _unitOfWork.CompleteAsync();
+
+                return Ok(productToUpdate);
             }
+            catch (Exception e)
+            {
+                _unitOfWork.Dispose();
+                Console.WriteLine(e);
+                return StatusCode(500, "Internal server error");
+            }
+            
 
-            productToUpdate.Name = product.Name;
-            productToUpdate.Price = product.Price;
-            productToUpdate.Stock = product.Stock;
-
-            await productRepository.UpdateAsync(productToUpdate);
-
-            await _unitOfWork.CompleteAsync();
-
-            return Ok();
         }
 
 
