@@ -31,8 +31,7 @@ namespace WebShop.Controllers
             try
             {
                 var productRepository = _unitOfWork.Repository<Product>();
-                //if (productRepository is null)
-                //    return NotFound();
+               
 
 
                 productRepository.AddAsync(product);//Endast denna ska testas
@@ -56,17 +55,16 @@ namespace WebShop.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()  
         {
 
-            var productRepository = _unitOfWork.Repository<Product>();
-
-            if (productRepository is null)
-                return NotFound();
-
-
+          
             try
             {
+                var productRepository = _unitOfWork.Repository<Product>();
+
+                if (productRepository is null)
+                    return NotFound();
                 var productList = await productRepository.GetAllAsync();
 
                 if (productList is null || !productList.Any())
