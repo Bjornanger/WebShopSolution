@@ -53,7 +53,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
 
-
         }
 
         [HttpGet]
@@ -100,7 +99,7 @@ namespace WebShop.Controllers
 
                 if (product is null)
                 {
-                    return BadRequest();
+                    return NotFound();
                 }
 
                 return Ok(product);
@@ -122,17 +121,12 @@ namespace WebShop.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-
-            if (product is null)
-                return BadRequest();
-
-
-            var productRepository = _unitOfWork.Repository<Product>();
-            if (productRepository is null)
-                return NotFound();
-
             try
             {
+                var productRepository = _unitOfWork.Repository<Product>();
+                if (productRepository is null)
+                    return NotFound();
+
                 var productToUpdate = await productRepository.GetByIdAsync(id);
 
                 if (productToUpdate is null)
@@ -164,15 +158,13 @@ namespace WebShop.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
-
-            var productRepository = _unitOfWork.Repository<Product>();
-
-
-
+            
             try
             {
+                var productRepository = _unitOfWork.Repository<Product>();
                 var product = await productRepository.GetByIdAsync(id);
-                if (product is null)
+
+                if (product == null)
                 {
                     return NotFound();
                 }
@@ -189,11 +181,6 @@ namespace WebShop.Controllers
                 Console.WriteLine(e);
                 return StatusCode(500, "Internal server error");
             }
-
-
-
-
-
 
         }
 

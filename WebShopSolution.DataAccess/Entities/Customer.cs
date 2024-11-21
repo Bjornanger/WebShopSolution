@@ -11,6 +11,7 @@ public class Customer: IEntity
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
+    
     [JsonIgnore]
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 

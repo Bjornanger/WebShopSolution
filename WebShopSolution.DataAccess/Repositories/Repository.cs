@@ -32,20 +32,42 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         
     }
 
-    public async Task AddAsync(TEntity entity)
+    public async Task<bool> AddAsync(TEntity entity)
     {
-       await _dbSet.AddAsync(entity);
+        try
+        {
+            await _dbSet.AddAsync(entity);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    public async Task UpdateAsync(TEntity entity)
+    public async Task<bool> UpdateAsync(TEntity entity)
     {
-       _dbSet.Update(entity);
-       
+        try
+        {
+            _dbSet.Update(entity);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    public async Task RemoveAsync(int id)
+    public async Task<bool> RemoveAsync(int id)
     {
-      _dbSet.Remove(await GetByIdAsync(id));
-      
+        try
+        {
+            _dbSet.Remove(await GetByIdAsync(id));
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }
