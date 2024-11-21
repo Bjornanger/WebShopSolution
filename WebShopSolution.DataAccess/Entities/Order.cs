@@ -10,7 +10,7 @@ public class Order : IEntity
     public int Id { get; set; }
     public int CustomerId { get; set; }
     public Customer Customer { get; set; }
-    [JsonIgnore]
+    
     public ICollection<OrderItem> OrderProducts { get; set; } = new List<OrderItem>();
 
     public int Quantity { get; set; }
