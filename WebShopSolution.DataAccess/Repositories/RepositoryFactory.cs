@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
+using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.Shared.Interfaces;
 
@@ -22,6 +23,13 @@ public class RepositoryFactory() : IRepositoryFactory
         if (typeof(TEntity) == typeof(Product))
             return (IRepository<TEntity>)
                 new ProductRepository(_context);
+
+        if (typeof(TEntity) == typeof(Entities.Customer))
+            return (IRepository<TEntity>)
+                new CustomerRepository(_context);
+
+
+
 
 
 

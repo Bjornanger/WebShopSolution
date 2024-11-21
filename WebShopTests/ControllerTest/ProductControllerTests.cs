@@ -13,20 +13,20 @@ public class ProductControllerTests
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
     private readonly ProductController _controller;
-    
+
     public ProductControllerTests()
     {
-       
+
         // Initialisera fakes
-        _productRepository = A.Fake<IProductRepository>(); 
+        _productRepository = A.Fake<IProductRepository>();
         _unitOfWork = A.Fake<IUnitOfWork>();
-         
-        
+
+
         // Initialisera controller
         _controller = new ProductController(_unitOfWork);
 
     }
-    
+
     #region DeleteProducts
 
     [Fact]
@@ -52,7 +52,6 @@ public class ProductControllerTests
 
         //Assert
         var NotFoundObject = Assert.IsType<NotFoundResult>(result);
-
         Assert.False(false);
         Assert.Equal(404, NotFoundObject.StatusCode);
         Assert.False(false);
@@ -102,32 +101,43 @@ public class ProductControllerTests
 
         await _controller.AddProduct(product);
 
-
-        Product productToUpdateValueOn = new Product
+        Product productWithUpdatedValue = new Product
         {
             Id = 1,
             Name = "Fotkräm",
-            Price = 50,
-            Stock = 60,
+            Price = 30,
+            Stock = 50,
             OrderProducts = null
         };
-
-
+        
+        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
+        A.CallTo(() => _productRepository.UpdateAsync(product)).Returns(true);
+        
         //Act
 
-        var result = await _controller.UpdateProduct(1, productToUpdateValueOn);
+        var result = await _controller.UpdateProduct(product.Id, productWithUpdatedValue);
+        var response = await _controller.GetProductById(product.Id);
 
         //Assert
+
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.NotNull(okResult);
         Assert.Equal(200, okResult.StatusCode);
-
-        var updatedProduct = Assert.IsAssignableFrom<Product>(okResult.Value);
-        Assert.Equal(productToUpdateValueOn.Name, updatedProduct.Name);
-        Assert.Equal(productToUpdateValueOn.Price, updatedProduct.Price);
-        Assert.Equal(productToUpdateValueOn.Stock, updatedProduct.Stock);
+        Assert.True(true);
 
 
+        var getResponse = (response.Result as OkObjectResult).Value as Product;
+
+
+        //Kontroll på att värden har förändrats
+        Assert.NotEqual("Socker", getResponse.Name);
+        Assert.NotEqual(10, getResponse.Price);
+        Assert.NotEqual(20, getResponse.Stock);
+
+        Assert.Equal("Fotkräm", getResponse.Name);
+        Assert.Equal(30, getResponse.Price);
+        Assert.Equal(50, getResponse.Stock);
+        
     }
 
     [Fact]
@@ -182,7 +192,7 @@ public class ProductControllerTests
     }
 
     #endregion
-    
+
     #region GetAllProducts
 
     [Fact]
@@ -212,7 +222,7 @@ public class ProductControllerTests
     [Fact]
     public async Task GetAllProducts_ProductListAreEmpty_ReturnNotFound()
     {
-       
+
         //Act
         var result = await _controller.GetAllProducts();
 
@@ -223,22 +233,17 @@ public class ProductControllerTests
 
         Assert.Equal(404, notFoundResult.StatusCode);
     }
-    
+
     [Fact]
-    public async Task GetAllProducts_ReturnsOkResult_WithAListOfProducts()
+    public async Task GetAllProducts_ReturnsOkResult_WithAFakeListOfProducts()
     {
         // Arrange
 
-        Product product = new Product
-        {
-           
-            Name = "Socker",
-            Price = 10,
-            Stock = 20,
-            OrderProducts = null
-        };
-        await _controller.AddProduct(product);
-
+        var fakeProductList = A.CollectionOfDummy <Product>(4);
+        
+        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        A.CallTo(() => _productRepository.GetAllAsync())
+            .Returns(Task.FromResult((IEnumerable<Product>)(fakeProductList)));
 
 
         // Act
@@ -246,15 +251,21 @@ public class ProductControllerTests
 
 
         // Assert
-        Assert.NotNull(result);
-        Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
+
+        var actionResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result); 
+        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+        var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(okResult.Value);
+
+        Assert.NotEmpty(productList);
+        Assert.True(productList.Any());
+        Assert.Equal(4, productList.Count());
 
     }
 
 
 
     #endregion
-    
+
     #region GetProductById
 
     [Fact]
@@ -277,26 +288,26 @@ public class ProductControllerTests
 
         A.CallTo(() => _unitOfWork.Dispose()).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task GetProductById_ProductIsNotFound_ReturnNotFound()
     {
         //Arrange
-        
+
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult<Product>(null));
-        
+
         //Act
         var result = await _controller.GetProductById(34);
-        
+
         //Assert
-        
+
         var actionResult = Assert.IsType<ActionResult<Product>>(result);
         var objectResult = Assert.IsType<NotFoundResult>(actionResult.Result);
         Assert.Equal(404, objectResult.StatusCode);
         A.CallTo(() => _productRepository.GetByIdAsync(A<int>._)).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task GetProductsById_ReturnsOkResult_WithSpecificProducts()
     {
@@ -310,18 +321,18 @@ public class ProductControllerTests
             Stock = 20,
             OrderProducts = null
 
-        }; 
+        };
 
-        
+
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
-        A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(expectedProduct)); 
-        
+        A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(expectedProduct));
+
         // Act
         var result = await _controller.GetProductById(product.Id);
 
 
         // Assert
-        var actionResult = Assert.IsType<ActionResult<Product>>(result); 
+        var actionResult = Assert.IsType<ActionResult<Product>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         Assert.NotNull(result);
         Assert.Equal(expectedProduct.Id, ((Product)okResult.Value).Id);
@@ -339,7 +350,7 @@ public class ProductControllerTests
     {
         //Arrange
         Product product = null;
-       
+
         //Act
         var result = await _controller.AddProduct(product);
 
@@ -379,7 +390,7 @@ public class ProductControllerTests
     public async void AddProduct_TestsTheMethodWithFakeItEasy_ReturnsOkResultAndTrue()
     {
         // Arrange
-       
+
         var product = A.Dummy<Product>();
 
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
@@ -408,7 +419,7 @@ public class ProductControllerTests
             Stock = 4,
             OrderProducts = null
         };
-        
+
         //Act
         var result = await _controller.AddProduct(product);
 
@@ -421,7 +432,7 @@ public class ProductControllerTests
     public async Task AddProduct_WithInvalidInput_ReturnStatusCode500()
     {
         //Arrange
-        
+
         var product = new Product
         {
             Name = "Ap",
@@ -429,7 +440,7 @@ public class ProductControllerTests
             Stock = 4,
             OrderProducts = null
         };
-        
+
         _controller.ModelState.AddModelError("Name", "Name is required");
 
         //Act
