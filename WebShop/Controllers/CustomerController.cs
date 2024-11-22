@@ -99,6 +99,7 @@ namespace WebShop.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest();
+
             if (customer is null)
                 return BadRequest();
             try
@@ -113,6 +114,7 @@ namespace WebShop.Controllers
                 customerToUpdate.LastName = customer.LastName;
                 customerToUpdate.Email = customer.Email;
                 customerToUpdate.Password = customer.Password;
+                
                 customerRepository.UpdateAsync(customerToUpdate);
                 await _unitOfWork.CompleteAsync();
                 return Ok();

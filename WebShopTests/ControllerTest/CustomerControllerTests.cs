@@ -14,36 +14,172 @@ namespace WebShopTests.ControllerTest;
 
 public class CustomerControllerTests
 {
-    
+
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICustomerRepository _customerRepository;
     private readonly CustomerController _controller;
 
 
-    private readonly MyDbContext _context;
-
-
-
 
     public CustomerControllerTests()
     {
-        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabase")
-            .Options;
-
-        _context = new MyDbContext(options);
-
-
-
-
         _customerRepository = A.Fake<ICustomerRepository>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
-         _controller = new CustomerController(_unitOfWork);
+        _controller = new CustomerController(_unitOfWork);
     }
 
     //Arrange
     //Act
     //Assert
+
+    #region DeleteCustomer
+
+    [Fact]
+    public async Task DeleteCustomer_WithInValidInput_ReturnsNotFound404()
+    {
+        //Arrange
+
+        Customer customer = new Customer()
+        {
+            Id = 3,
+            FirstName = "Kalle",
+            LastName = "Anka",
+            Email = "Ankeborg@Blazor.com",
+            Password = "Hejsan123"
+        };
+        A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
+        A.CallTo(() => _customerRepository.GetByIdAsync(customer.Id)).Returns(Task.FromResult(customer));
+        A.CallTo(() => _customerRepository.GetByIdAsync(56)).Returns(Task.FromResult<Customer>(null));
+
+
+        //Act
+
+        var result = await _controller.DeleteCustomer(56);
+
+        //Assert
+        var NotFoundObject = Assert.IsType<NotFoundResult>(result);
+        Assert.False(false);
+        Assert.Equal(404, NotFoundObject.StatusCode);
+
+        A.CallTo(() => _customerRepository.GetByIdAsync(56)).MustHaveHappened();
+
+
+    }
+
+
+
+    [Fact]
+    public async Task DeleteCustomer_WithValidInput_ReturnsOkResult()
+    {
+        //Arrange
+
+        Customer customer = new Customer()
+        {
+            Id = 3,
+            FirstName = "Kalle",
+            LastName = "Anka",
+            Email = "Ankeborg@Blazor.com",
+            Password = "Hejsan123"
+        };
+
+        await _controller.AddCustomer(customer);
+        //Act
+
+        var result = await _controller.DeleteCustomer(customer.Id);
+
+        //Assert
+        Assert.IsType<OkResult>(result);
+
+    }
+
+
+    #endregion
+
+    #region UpdateCustomer
+
+    [Fact]
+    public async Task UpdateCustomer_ModelStateIsInvalid_ReturnBadRequest400()
+    {
+        //Arrange
+        Customer customer = new Customer()
+        {
+            FirstName = "",
+            LastName = "Anka",
+            Email = "Ankeborg@Blazor.com",
+            Password = "Hejsan123"
+        };
+
+        _controller.ModelState.AddModelError("Name", "Name is required");
+        
+        //Act
+
+        var result = await _controller.UpdateCustomer(1,customer);
+
+        //Assert
+        Assert.False(false);
+        var actionResult = Assert.IsType<BadRequestResult>(result);
+        Assert.Equal(400, actionResult.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task UpdateCustomer_WithValidInput_ReturnsOkResult()
+    {
+        //Arrange
+        Customer customer = new Customer()
+        {
+            Id = 2,
+            FirstName = "Kalle",
+            LastName = "Anka",
+            Email = "Ankeborg@Blazor.com",
+            Password = "Hejsan123"
+        };
+
+        await _controller.AddCustomer(customer);
+
+        Customer customerToUpdate = new Customer()
+        {   Id = 2,
+            FirstName = "Musse",
+            LastName = "Pigg",
+            Email = "Ankeborg@Blazor.com",
+            Password = "Hejsan123"
+        };
+
+        A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
+        A.CallTo(()=> _customerRepository.GetByIdAsync(customer.Id)).Returns(Task.FromResult(customer));
+        A.CallTo(() => _customerRepository.UpdateAsync(customer)).Returns(customerToUpdate);
+
+        //Act
+
+        var result = await _controller.UpdateCustomer(customer.Id, customerToUpdate);
+        var response =await _controller.GetCustomerById(customer.Id);
+        //Assert
+
+        var OkResult = Assert.IsType<OkResult>(result);
+        Assert.Equal(200, OkResult.StatusCode);
+        Assert.True(true);
+
+        var getResponse = Assert.IsType<OkObjectResult>(response.Result);
+        var customerResponse = Assert.IsType<Customer>(getResponse.Value);
+
+        //Kontroll på att värden har förändrats
+        Assert.NotEqual("Kalle", customerResponse.FirstName);
+        Assert.NotEqual("Anka", customerResponse.LastName);
+        Assert.Equal("Ankeborg@Blazor.com", customerResponse.Email);
+        Assert.Equal("Hejsan123", customerResponse.Password);
+
+        
+        Assert.Equal("Musse", customerResponse.FirstName);
+        Assert.Equal("Pigg", customerResponse.LastName);
+        Assert.Equal("Ankeborg@Blazor.com", customerResponse.Email);
+        Assert.Equal("Hejsan123", customerResponse.Password);
+        A.CallTo(() => _customerRepository.UpdateAsync(customer)).MustHaveHappened();
+
+    }
+    #endregion
+
+    #region GetCustomerById
 
     [Fact]
     public async Task GetCustomerById_WithInValidInput_ReturnNotFound()
@@ -52,6 +188,7 @@ public class CustomerControllerTests
         A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
         A.CallTo(() => _customerRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult<Customer>(null));
 
+
         // //Act
         var result = await _controller.GetCustomerById(67);
 
@@ -59,10 +196,9 @@ public class CustomerControllerTests
         var actionResult = Assert.IsType<ActionResult<Customer>>(result);
         var notFoundObject = Assert.IsType<NotFoundResult>(actionResult.Result);
         Assert.Equal(404, notFoundObject.StatusCode);
-        
-    }
 
-     
+        A.CallTo(() => _customerRepository.GetByIdAsync(A<int>._)).MustHaveHappened();
+    }
 
     [Fact]
     public async Task GetCustomerById_WithValidInput_ReturnOk()
@@ -71,32 +207,35 @@ public class CustomerControllerTests
 
         var dummyCustomer = A.Dummy<Customer>();
 
-
         Customer customer = new Customer()
         {
-            Id = 3, FirstName = "Kalle",
+            Id = 3,
+            FirstName = "Kalle",
             LastName = "Anka",
             Email = "Ankeborg@Blazor.com",
             Password = "Hejsan123"
         };
         A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
         A.CallTo(() => _customerRepository.GetByIdAsync(dummyCustomer.Id)).Returns(Task.FromResult(customer));
-        
+
         // //Act
         var result = await _controller.GetCustomerById(dummyCustomer.Id);
-        
+
         //Assert
         var actionResult = Assert.IsType<ActionResult<Customer>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
 
         var dummy = Assert.IsAssignableFrom<Customer>(okResult.Value);
-        
+
         Assert.Equal(customer.Id, dummy.Id);
         Assert.Equal(customer.FirstName, dummy.FirstName);
         Assert.Equal(customer.LastName, dummy.LastName);
         Assert.Equal(customer.Email, dummy.Email);
+
+        A.CallTo(() => _customerRepository.GetByIdAsync(dummyCustomer.Id)).MustHaveHappened();
     }
 
+    #endregion
 
     #region GetAllCustomers
 
@@ -124,9 +263,10 @@ public class CustomerControllerTests
         Assert.True(customerList.Any());
         Assert.Equal(4, customerList.Count());
 
+        A.CallTo(() => _customerRepository.GetAllAsync()).MustHaveHappened();
+
 
     }
-
 
     [Fact]
     public async Task GetAllCustomers_ReturnNotFound()
@@ -141,7 +281,7 @@ public class CustomerControllerTests
             Password = "Hejsan123"
         };
 
-       
+
         await _controller.AddCustomer(customer);
 
         //Act
@@ -157,7 +297,7 @@ public class CustomerControllerTests
     }
 
     #endregion
-    
+
     #region AddCustomer
 
     [Fact]
@@ -172,7 +312,7 @@ public class CustomerControllerTests
             Email = "Ankeborg@Blazor.com",
             Password = "Hejsan123"
         };
-        
+
 
         //Act
         var result = await _controller.AddCustomer(customer);
@@ -208,5 +348,5 @@ public class CustomerControllerTests
     }
 
     #endregion
-    
+
 }

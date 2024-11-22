@@ -14,9 +14,7 @@ public class ProductControllerTests
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
     private readonly ProductController _controller;
-
-    private readonly RepositoryFactory _factory;
-
+    
     public ProductControllerTests()
     {
 
@@ -33,7 +31,7 @@ public class ProductControllerTests
     #region DeleteProducts
 
     [Fact]
-    public async Task DeleteProduct_WithInvalidInput_ReturnNotFound()
+    public async Task DeleteProduct_WithInvalidInput_ReturnNotFound404()
     {
         //Arrange
         Product product = new Product
@@ -57,7 +55,6 @@ public class ProductControllerTests
         var NotFoundObject = Assert.IsType<NotFoundResult>(result);
         Assert.False(false);
         Assert.Equal(404, NotFoundObject.StatusCode);
-        Assert.False(false);
         A.CallTo(() => _productRepository.GetByIdAsync(345)).MustHaveHappened();
     }
 
@@ -140,7 +137,9 @@ public class ProductControllerTests
         Assert.Equal("Fotkräm", getResponse.Name);
         Assert.Equal(30, getResponse.Price);
         Assert.Equal(50, getResponse.Stock);
-        
+
+        A.CallTo(() => _productRepository.UpdateAsync(product)).MustHaveHappened();
+
     }
 
     [Fact]
@@ -168,7 +167,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task UpdateProduct_ModelStatWithNotValidInput_ReturnBadRequest()
+    public async Task UpdateProduct_ModelStatWithNotValidInput_ReturnBadRequest400()
     {
         //Arrange
 
@@ -223,22 +222,27 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task GetAllProducts_ProductListAreEmpty_ReturnNotFound()
+    public async Task GetAllProducts_ProductListAreEmpty_ReturnNotFound404_GetAllAsyncMustHaveHappened()
     {
+        //Arrange
+
+        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        A.CallTo(()=> _productRepository.GetAllAsync()).Returns(Task.FromResult<IEnumerable<Product>>(null));
 
         //Act
         var result = await _controller.GetAllProducts();
-
-
+        
         //Assert
         var actionResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
         var notFoundResult = Assert.IsType<NotFoundResult>(actionResult.Result);
 
         Assert.Equal(404, notFoundResult.StatusCode);
+
+        A.CallTo(() => _productRepository.GetAllAsync()).MustHaveHappened();
     }
 
     [Fact]
-    public async Task GetAllProducts_ReturnsOkResult_WithAFakeListOfProducts()
+    public async Task GetAllProducts_ReturnsOkResult_WithAFakeListOfProducts_GetAllAsyncMustHaveHappened()
     {
         // Arrange
 
@@ -262,6 +266,8 @@ public class ProductControllerTests
         Assert.NotEmpty(productList);
         Assert.True(productList.Any());
         Assert.Equal(4, productList.Count());
+
+        A.CallTo(()=> _productRepository.GetAllAsync()).MustHaveHappened();
 
     }
 
@@ -293,7 +299,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task GetProductById_ProductIsNotFound_ReturnNotFound()
+    public async Task GetProductById_ProductIsNotFound_ReturnNotFound404()
     {
         //Arrange
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
@@ -346,7 +352,7 @@ public class ProductControllerTests
     #region AddProduct
 
     [Fact]
-    public async Task AddProduct_ProductIsNull_ReturnBadRequest()
+    public async Task AddProduct_ProductIsNull_ReturnBadRequest400()
     {
         //Arrange
         Product product = null;
@@ -362,7 +368,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task AddProduct_ModelStateIsInvalid_ReturnBadRequest()
+    public async Task AddProduct_ModelStateIsInvalid_ReturnBadRequest400()
     {
         //Arrange
 
@@ -407,7 +413,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task AddProduct_ValidProduct_AddsProduct()
+    public async Task AddProduct_ValidProduct_AddsProduct_ReturnsOKResult()
     {
         //Arrange
         var product = new Product
@@ -417,13 +423,15 @@ public class ProductControllerTests
             Stock = 4,
             OrderProducts = null
         };
-
+        
         //Act
         var result = await _controller.AddProduct(product);
 
         //Assert
+        
         var actionResult = Assert.IsType<OkResult>(result);
         Assert.Equal(200, actionResult.StatusCode);
+        
     }
 
     [Fact]
