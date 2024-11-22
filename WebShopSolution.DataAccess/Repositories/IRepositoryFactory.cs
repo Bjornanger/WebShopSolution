@@ -6,7 +6,7 @@ public interface IRepositoryFactory
 {
 
     //Detta är en generisk metod som returnerar ett repository
-    public IRepository<TEntity> GetSpecificRepository<TEntity>() where TEntity : class;
+    public IRepository<TEntity> CreateRepository<TEntity>() where TEntity : class;
 
 
 

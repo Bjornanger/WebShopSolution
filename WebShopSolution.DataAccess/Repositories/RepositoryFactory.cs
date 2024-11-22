@@ -19,7 +19,7 @@ public class RepositoryFactory() : IRepositoryFactory
     }
 
     //Lägg in en Switch-sats här senare för de andra entity
-    public IRepository<TEntity> GetSpecificRepository<TEntity>() where TEntity : class
+    public IRepository<TEntity> CreateRepository<TEntity>() where TEntity : class
     {
         if (typeof(TEntity) == typeof(Product))
             return (IRepository<TEntity>)

@@ -49,7 +49,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
                 return (IRepository<TEntity>)existingRepository;
             }
 
-            var repository = _repositoryFactory.GetSpecificRepository<TEntity>();
+            var repository = _repositoryFactory.CreateRepository<TEntity>();
             _repositories[typeof(TEntity)] = repository;
             return repository;
         }
@@ -63,9 +63,9 @@ namespace WebShopSolution.DataAccess.UnitOfWork
 
         public async void Dispose()
         {
-           _context.Dispose();
+            _context.Dispose();
         }
-        
+
 
         public void NotifyProductAdded(Product product)
         {

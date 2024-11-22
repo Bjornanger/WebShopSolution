@@ -30,7 +30,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         {
             return null;
         }
-       
 
     }
 
@@ -64,7 +63,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         try
         {
-            _dbSet.Update(entity);
+           _dbSet.Update(entity);
             return entity;
         }
         catch

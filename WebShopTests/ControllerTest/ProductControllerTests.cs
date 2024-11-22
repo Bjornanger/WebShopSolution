@@ -2,6 +2,7 @@ using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
+using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
 using A = FakeItEasy.A;
@@ -13,6 +14,8 @@ public class ProductControllerTests
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
     private readonly ProductController _controller;
+
+    private readonly RepositoryFactory _factory;
 
     public ProductControllerTests()
     {
@@ -293,7 +296,6 @@ public class ProductControllerTests
     public async Task GetProductById_ProductIsNotFound_ReturnNotFound()
     {
         //Arrange
-
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult<Product>(null));
 
@@ -322,15 +324,13 @@ public class ProductControllerTests
             OrderProducts = null
 
         };
-
-
+        
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(expectedProduct));
 
         // Act
         var result = await _controller.GetProductById(product.Id);
-
-
+        
         // Assert
         var actionResult = Assert.IsType<ActionResult<Product>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
@@ -368,15 +368,13 @@ public class ProductControllerTests
 
         var product = new Product
         {
-
             Name = "T",
             Price = 0,
             Stock = 0,
             OrderProducts = null
         };
         _controller.ModelState.AddModelError("Name", "Name is required");
-
-
+        
         //Act
         var result = await _controller.AddProduct(product);
 
