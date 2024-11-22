@@ -23,7 +23,7 @@ public class ProductRepositoryTests
     }
     
     [Fact]
-    public async Task GetByIdAsync_ReturnsProduct()
+    public async Task GetByIdAsync_ReturnsCorrectProduct()
     {
         // Arrange
         var product = new Product
@@ -51,7 +51,6 @@ public class ProductRepositoryTests
        
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-    
     [Fact]
     public async Task GetByIdAsync_ReturnsNull()
     {
@@ -75,11 +74,7 @@ public class ProductRepositoryTests
 
         Assert.Null(result);
 
-        //Assert.Equal(product.Id, result.Id);
-        //Assert.Equal(product.Name, result.Name);
-        //Assert.Equal(product.Price, result.Price);
-        //Assert.Equal(product.Stock, result.Stock);
-        //Assert.Equal(product, result);
+        
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
@@ -88,7 +83,7 @@ public class ProductRepositoryTests
     public async Task GetAllAsync_ReturnsAllProducts()
     {
         // Arrange
-        var product1 = new Product
+        var socker = new Product
         {
             Id = 12,
             Name = "Socker",
@@ -97,7 +92,7 @@ public class ProductRepositoryTests
             OrderProducts = null
         };
 
-        var product2 = new Product
+        var Plastflaska = new Product
         {
             Id = 23,
             Name = "Plastflaska",
@@ -105,14 +100,14 @@ public class ProductRepositoryTests
             Stock = 5,
             OrderProducts = null
         };
-        await _InMemoryContext.AddAsync(product1);
-        await _InMemoryContext.AddAsync(product2);
+        await _InMemoryContext.AddAsync(socker);
+        await _InMemoryContext.AddAsync(Plastflaska);
         await _InMemoryContext.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetAllAsync();
         // Assert
-        Assert.Equal(new List<Product> { product1, product2 }, result);
+        Assert.Equal(new List<Product> { socker, Plastflaska }, result);
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
@@ -139,7 +134,7 @@ public class ProductRepositoryTests
         };
         await _InMemoryContext.AddAsync(product1);
         await _InMemoryContext.AddAsync(product2);
-        //await _InMemoryContext.SaveChangesAsync();
+        
 
         // Act
         var result = await _repository.GetAllAsync();
@@ -173,15 +168,11 @@ public class ProductRepositoryTests
     public async Task AddAsync_AddsProduct_ReturnsFalse()
     {
         // Arrange
-        Product product= null;
-
+        Product? product = null;
         // Act
         var result = await _repository.AddAsync(product);
-
         // Assert
         Assert.False(result);
-        
-
     }
 
     [Fact]
@@ -232,7 +223,7 @@ public class ProductRepositoryTests
     }
     
     [Fact]
-    public async Task RemoveAsync_RemovesProduct_True()
+    public async Task RemoveAsync_RemovesProduct_ReturnsTrue()
     {
         // Arrange
         var productToRemove = new Product
@@ -255,13 +246,15 @@ public class ProductRepositoryTests
 
         // Assert
         Assert.True(result);
+        Assert.Null(checkIfGone);
+
         Assert.NotEqual(productToRemove, checkIfGone);
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
 
     [Fact]
-    public async Task RemoveAsync_RemovesProduct_False()
+    public async Task RemoveAsync_RemovesProduct_ReturnsFalse()
     {
         // Arrange
         var productToRemove = new Product
