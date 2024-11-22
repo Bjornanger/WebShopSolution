@@ -22,13 +22,28 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public async Task<TEntity> GetByIdAsync(int id)
     {
-        return await _dbSet.FindAsync(id);
+        try
+        {
+            return await _dbSet.FindAsync(id);
+        }
+        catch
+        {
+            return null;
+        }
+       
 
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        try
+        {
+            return await _dbSet.ToListAsync();
+        }
+        catch
+        {
+            return new List<TEntity>();
+        } 
         
     }
 
@@ -45,16 +60,16 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         }
     }
 
-    public async Task<bool> UpdateAsync(TEntity entity)
+    public async Task<TEntity> UpdateAsync(TEntity entity)
     {
         try
         {
             _dbSet.Update(entity);
-            return true;
+            return entity;
         }
         catch
         {
-            return false;
+            return null;
         }
     }
 
@@ -65,7 +80,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
             _dbSet.Remove(await GetByIdAsync(id));
             return true;
         }
-        catch (Exception e)
+        catch 
         {
             return false;
         }

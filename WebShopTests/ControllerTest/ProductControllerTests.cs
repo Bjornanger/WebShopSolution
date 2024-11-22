@@ -112,7 +112,7 @@ public class ProductControllerTests
         
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
-        A.CallTo(() => _productRepository.UpdateAsync(product)).Returns(true);
+        A.CallTo(() => _productRepository.UpdateAsync(product)).Returns(productWithUpdatedValue);
         
         //Act
 
