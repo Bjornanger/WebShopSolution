@@ -112,7 +112,7 @@ public class ProductRepositoryTests
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
-    public async Task GetAllAsync_ReturnsAllEmptyList()
+    public async Task GetAllAsync_ReturnsEmptyList()
     {
         //Arrange
        var product1 = new Product
@@ -197,7 +197,7 @@ public class ProductRepositoryTests
         productToUpdate.Name = "Plastpåse";
 
         // Act
-         _repository.UpdateAsync(productToUpdate);
+        await _repository.UpdateAsync(productToUpdate);
         await _InMemoryContext.SaveChangesAsync();
         var result = await _repository.GetByIdAsync(productToUpdate.Id);
 
@@ -277,8 +277,5 @@ public class ProductRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
-
-
 
 }
