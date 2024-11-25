@@ -26,7 +26,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
 
         // Konstruktor används för tillfället av Observer pattern
         //ProductSubject productSubject= null
-        public UnitOfWork(MyDbContext context, IRepositoryFactory factory )
+        public UnitOfWork(MyDbContext context, IRepositoryFactory factory)
         {
 
             _context = context;
@@ -61,7 +61,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             await _context.SaveChangesAsync();
         }
 
-        public async void Dispose()
+        public void Dispose()
         {
             _context.Dispose();
         }

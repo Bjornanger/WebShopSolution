@@ -15,7 +15,6 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 });
 
 
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -34,6 +33,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
+
+//Apply migrations från Websolution 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+//    dbContext.Database.Migrate();
+//}
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
