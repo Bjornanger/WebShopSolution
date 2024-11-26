@@ -13,8 +13,8 @@ public class ProductControllerTests
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
-    private readonly ProductController _controller = A.Fake<ProductController>();
-    
+    private readonly ProductController _controller;
+
     public ProductControllerTests()
     {
 
@@ -22,9 +22,10 @@ public class ProductControllerTests
         _productRepository = A.Fake<IProductRepository>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
+        _controller = A.Fake<ProductController>();
 
         // Initialisera controller
-        _controller = new ProductController(_unitOfWork);
+        
 
     }
 
@@ -34,19 +35,12 @@ public class ProductControllerTests
     public async Task DeleteProduct_WithInvalidInput_ReturnNotFound404()
     {
         //Arrange
-        Product product = new Product
-        {
-            Id = 98,
-            Name = "Socker",
-            Price = 10,
-            Stock = 20,
-            OrderProducts = null
-        };
+        var product = A.Dummy<Product>();
 
         //A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         //A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
         //A.CallTo(() => _productRepository.GetByIdAsync(345)).Returns(Task.FromResult<Product>(null));
-        A.CallTo(() => _controller.DeleteProduct(98)).Returns(Task.FromResult<ActionResult>(null));
+        A.CallTo(() => _controller.DeleteProduct(product.Id)).Returns(Task.FromResult<ActionResult>(null));
         //Act
         var result = await _controller.DeleteProduct(product.Id);
 
