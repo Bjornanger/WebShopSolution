@@ -8,7 +8,6 @@ namespace WebShopSolution.DataAccess.Repositories;
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
 
-    //Consume db Context
     private readonly MyDbContext _context;
 
     private readonly DbSet<TEntity> _dbSet;

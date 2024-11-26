@@ -32,19 +32,11 @@ namespace WebShop.Controllers
             {
                 var productRepository = _unitOfWork.Repository<Product>();
                
-
-
-                productRepository.AddAsync(product);//Endast denna ska testas
+                productRepository.AddAsync(product);
                 
-
                 await _unitOfWork.CompleteAsync();
                 return Ok();
-
-                // Notifierar observatörer om att en ny produkt har lagts till
-
-                _unitOfWork.NotifyProductAdded(product);
-
-
+                
             }
             catch (Exception e)
             {

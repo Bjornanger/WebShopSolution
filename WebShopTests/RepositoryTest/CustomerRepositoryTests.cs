@@ -121,7 +121,6 @@ public class CustomerRepositoryTests
     public async Task GetAllAsync_ReturnsEmptyList()
     {
         // Arrange
-
         Customer Johnny = new Customer
         {
             Id = 3,
@@ -131,6 +130,7 @@ public class CustomerRepositoryTests
             Password = "DaxWax",
             Orders = null
         };
+
         Customer Samuraj = new Customer
         {
             Id = 366,

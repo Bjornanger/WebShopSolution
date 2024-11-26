@@ -8,4 +8,8 @@ public class CustomerRepository : Repository<Entities.Customer>, ICustomerReposi
     public CustomerRepository(MyDbContext context) : base(context)
     {
     }
+    public bool ChangePassword(string password)
+    {
+        throw new NotImplementedException();
+    }
 }

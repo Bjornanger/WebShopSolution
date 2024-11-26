@@ -18,7 +18,6 @@ public class RepositoryFactory() : IRepositoryFactory
         this._context = context;
     }
 
-    //Lägg in en Switch-sats här senare för de andra entity
     public IRepository<TEntity> CreateRepository<TEntity>() where TEntity : class
     {
         if (typeof(TEntity) == typeof(Product))
@@ -36,6 +35,5 @@ public class RepositoryFactory() : IRepositoryFactory
 
         return new Repository<TEntity>(_context);
     }
-
-
+    
 }

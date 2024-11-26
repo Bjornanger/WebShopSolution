@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
-using WebShopSolution.DataAccess.Notifications;
+
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.UnitOfWork;
 
@@ -23,13 +23,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddScoped<ISubject<Product>,ProductSubject>();
-
-builder.Services.AddTransient<INotificationObserver<Product>, EmailNotification >();
-builder.Services.AddTransient<INotificationObserver<Product>, SmsNotification>();
-builder.Services.AddTransient<INotificationObserver<Product>, PushNotification>();
-
 
 
 

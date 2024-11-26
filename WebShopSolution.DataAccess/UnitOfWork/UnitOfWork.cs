@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
-using WebShopSolution.DataAccess.Notifications;
+
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Orders;
@@ -15,31 +15,14 @@ namespace WebShopSolution.DataAccess.UnitOfWork
         private readonly MyDbContext _context;
         
         
-        //Kolla hur man ska lägga till generisk repo här
-
         public IRepositoryFactory _repositoryFactory { get; }
         private readonly Dictionary<Type, object> _repositories;
+        
 
-        private readonly ProductSubject _productSubject;
-
-
-
-        public UnitOfWork(MyDbContext context, IRepositoryFactory factory)
+        public UnitOfWork(IRepositoryFactory factory)
         {
-            _context = context;
             _repositoryFactory = factory;
             _repositories = new Dictionary<Type, object>();
-
-
-            // Om inget ProductSubject injiceras, skapa ett nytt
-            //_productSubject = productSubject ?? new ProductSubject();
-
-
-            // Registrera standardobservatörer
-            _productSubject.Attach(new EmailNotification());
-            _productSubject.Attach(new SmsNotification());
-            _productSubject.Attach(new PushNotification());
-
         }
 
         //Denna metod hanterar vilken typ av Entity som kommer in och returnerar rätt repository
@@ -54,25 +37,16 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             _repositories[typeof(TEntity)] = repository;
             return repository;
         }
-
-
-
+        
         public async Task CompleteAsync()
         {
             await _context.SaveChangesAsync();
         }
-
+        
         public void Dispose()
         {
             _context.Dispose();
         }
-
-
-
-        public void NotifyProductAdded(Product product)
-        {
-            _productSubject.Notify(product);
-        }
-       
+        
     }
 }

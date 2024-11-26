@@ -14,9 +14,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
 
         // Sparar förändringar (om du använder en databas)
         Task CompleteAsync();
-
-
-        void NotifyProductAdded(Product product); // Notifierar observatörer om ny produkt
+        
     }
 }
 

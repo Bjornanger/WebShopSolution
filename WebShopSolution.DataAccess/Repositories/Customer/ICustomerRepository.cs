@@ -2,5 +2,6 @@
 
 public interface ICustomerRepository : IRepository<Entities.Customer>
 {
-    
+    bool ChangePassword(string password);
+
 }
