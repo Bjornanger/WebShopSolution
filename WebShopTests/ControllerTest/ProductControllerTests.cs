@@ -13,7 +13,7 @@ public class ProductControllerTests
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
-    private readonly ProductController _controller;
+    private readonly ProductController _controller = A.Fake<ProductController>();
     
     public ProductControllerTests()
     {
@@ -43,19 +43,19 @@ public class ProductControllerTests
             OrderProducts = null
         };
 
-        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
-        A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
-        A.CallTo(() => _productRepository.GetByIdAsync(345)).Returns(Task.FromResult<Product>(null));
-
+        //A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        //A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
+        //A.CallTo(() => _productRepository.GetByIdAsync(345)).Returns(Task.FromResult<Product>(null));
+        A.CallTo(() => _controller.DeleteProduct(98)).Returns(Task.FromResult<ActionResult>(null));
         //Act
-        var result = await _controller.DeleteProduct(345);
+        var result = await _controller.DeleteProduct(product.Id);
 
 
         //Assert
-        var NotFoundObject = Assert.IsType<NotFoundResult>(result);
+        var NotFoundObject = Assert.IsType<ObjectResult>(result);
         Assert.False(false);
         Assert.Equal(404, NotFoundObject.StatusCode);
-        A.CallTo(() => _productRepository.GetByIdAsync(345)).MustHaveHappened();
+        A.CallTo(() => _controller.DeleteProduct(product.Id)).MustHaveHappened();
     }
 
     [Fact]

@@ -1,10 +1,12 @@
 ﻿using WebShopSolution.DataAccess.Entities;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopSolution.DataAccess.Notifications
 {
     // Gränssnitt för notifieringsobservatörer enligt Observer Pattern
-    public interface INotificationObserver
+    public interface INotificationObserver<TEntity> where TEntity : IEntity
     {
-        void Update(Product product); // Metod som kallas när en ny produkt läggs till
+
+        void Update(TEntity entity); //Metod som kallas när något läggs till i databasen
     }
 }

@@ -26,9 +26,8 @@ public class OrderControllerTests
     //Arrange
     //Act
     //Assert
-
     [Fact]
-    public async Task GetOrderById_ReturnOrder()
+    public async Task DeleteOrder_WithINvalidInput_ReturnsNotFound404()
     {
         //Arrange
         Order order = new Order
@@ -48,7 +47,94 @@ public class OrderControllerTests
             Quantity = 0
         };
 
-        A.CallTo(()=> _unitOfWork.Repository<Order>()).Returns(_orderRepository);
+        A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
+        A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).Returns(Task.FromResult<Order>(order));
+        A.CallTo(() => _orderRepository.GetByIdAsync(58)).Returns(Task.FromResult<Order>(null));
+        
+        //Act
+        var result = await _orderController.DeleteOrder(58);
+        //Assert
+        var notFound = Assert.IsType<NotFoundResult>(result);
+        Assert.False(false);
+        Assert.Equal(404, notFound.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task DeleteOrder_WithValidInput_ReturnsOK()
+    {
+        //Arrange
+        Order order = new Order
+        {
+            Id = 2,
+            CustomerId = 23,
+            Customer = new Customer
+            {
+                Id = 23,
+                FirstName = "Mikael",
+                LastName = "Blazor",
+                Email = "haha@Live.se",
+                Password = "Hej123",
+                Orders = null
+            },
+            OrderProducts = new List<OrderItem>(),
+            Quantity = 0
+        };
+
+        await _orderController.AddOrder(order);
+        //Act
+
+        var result = await _orderController.DeleteOrder(order.Id);
+        //Assert
+        Assert.IsType<OkResult>(result);
+    }
+
+
+    #region GetOrderById
+    [Fact]
+    public async Task GetOrderById_WithInvalidInputAsNull_ReturnsNotFound()
+    {
+        //Arrange
+
+        A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
+        A.CallTo(() => _orderRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult<Order>(null));
+
+
+        //Act
+        var result = await _orderController.GetOrderById(1);
+        //Assert
+
+        var actionResult = Assert.IsType<ActionResult<Order>>(result);
+        var notFoundResult = Assert.IsType<NotFoundResult>(actionResult.Result);
+
+
+        Assert.Equal(404, notFoundResult.StatusCode);
+    }
+
+
+
+    [Fact]
+    public async Task GetOrderById_WithValidInput_ReturnOrder()
+    {
+        //Arrange
+        Order order = new Order
+        {
+            Id = 2,
+            CustomerId = 23,
+            Customer = new Customer
+            {
+                Id = 23,
+                FirstName = "Mikael",
+                LastName = "Blazor",
+                Email = "haha@Live.se",
+                Password = "Hej123",
+                Orders = null
+            },
+            OrderProducts = new List<OrderItem>(),
+            Quantity = 0
+        };
+
+        A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
         A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).Returns(Task.FromResult(order));
 
         await _orderController.AddOrder(order);
@@ -69,6 +155,8 @@ public class OrderControllerTests
         A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).MustHaveHappened();
     }
 
+
+    #endregion
 
     #region GetAllOrders
 

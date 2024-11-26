@@ -111,10 +111,10 @@ public class CustomerControllerTests
         };
 
         _controller.ModelState.AddModelError("Name", "Name is required");
-        
+
         //Act
 
-        var result = await _controller.UpdateCustomer(1,customer);
+        var result = await _controller.UpdateCustomer(1, customer);
 
         //Assert
         Assert.False(false);
@@ -139,7 +139,8 @@ public class CustomerControllerTests
         await _controller.AddCustomer(customer);
 
         Customer customerToUpdate = new Customer()
-        {   Id = 2,
+        {
+            Id = 2,
             FirstName = "Musse",
             LastName = "Pigg",
             Email = "Ankeborg@Blazor.com",
@@ -147,13 +148,13 @@ public class CustomerControllerTests
         };
 
         A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
-        A.CallTo(()=> _customerRepository.GetByIdAsync(customer.Id)).Returns(Task.FromResult(customer));
+        A.CallTo(() => _customerRepository.GetByIdAsync(customer.Id)).Returns(Task.FromResult(customer));
         A.CallTo(() => _customerRepository.UpdateAsync(customer)).Returns(customerToUpdate);
 
         //Act
 
         var result = await _controller.UpdateCustomer(customer.Id, customerToUpdate);
-        var response =await _controller.GetCustomerById(customer.Id);
+        var response = await _controller.GetCustomerById(customer.Id);
         //Assert
 
         var OkResult = Assert.IsType<OkResult>(result);
@@ -169,7 +170,7 @@ public class CustomerControllerTests
         Assert.Equal("Ankeborg@Blazor.com", customerResponse.Email);
         Assert.Equal("Hejsan123", customerResponse.Password);
 
-        
+
         Assert.Equal("Musse", customerResponse.FirstName);
         Assert.Equal("Pigg", customerResponse.LastName);
         Assert.Equal("Ankeborg@Blazor.com", customerResponse.Email);
@@ -182,7 +183,7 @@ public class CustomerControllerTests
     #region GetCustomerById
 
     [Fact]
-    public async Task GetCustomerById_WithInValidInput_ReturnNotFound()
+    public async Task GetCustomerById_WithInValidInputAsNull_ReturnNotFound()
     {
         //Arrange
         A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);

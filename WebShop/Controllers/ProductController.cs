@@ -39,8 +39,10 @@ namespace WebShop.Controllers
 
                 await _unitOfWork.CompleteAsync();
                 return Ok();
+
                 // Notifierar observatörer om att en ny produkt har lagts till
-                //_unitOfWork.NotifyProductAdded(newProduct);
+
+                _unitOfWork.NotifyProductAdded(product);
 
 
             }

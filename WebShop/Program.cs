@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using WebShopSolution.DataAccess.Data;
+using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Notifications;
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.UnitOfWork;
@@ -22,7 +23,14 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<INotificationObserver, EmailNotification>();
+
+builder.Services.AddScoped<ISubject<Product>,ProductSubject>();
+
+builder.Services.AddTransient<INotificationObserver<Product>, EmailNotification >();
+builder.Services.AddTransient<INotificationObserver<Product>, SmsNotification>();
+builder.Services.AddTransient<INotificationObserver<Product>, PushNotification>();
+
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,17 +44,18 @@ var app = builder.Build();
 
 
 //Apply migrations från Websolution 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-//    dbContext.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+    dbContext.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
 app.UseSwagger();
 app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 

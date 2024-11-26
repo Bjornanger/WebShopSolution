@@ -32,14 +32,9 @@ public class RepositoryFactory() : IRepositoryFactory
         if (typeof(TEntity) == typeof(Order))
             return (IRepository<TEntity>)
                 new OrderRepository(_context);
-
-
-
-
-
+        
 
         return new Repository<TEntity>(_context);
-
     }
 
 

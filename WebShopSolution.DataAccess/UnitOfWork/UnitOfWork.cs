@@ -24,11 +24,8 @@ namespace WebShopSolution.DataAccess.UnitOfWork
 
 
 
-        // Konstruktor används för tillfället av Observer pattern
-        //ProductSubject productSubject= null
         public UnitOfWork(MyDbContext context, IRepositoryFactory factory)
         {
-
             _context = context;
             _repositoryFactory = factory;
             _repositories = new Dictionary<Type, object>();
@@ -37,8 +34,12 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             // Om inget ProductSubject injiceras, skapa ett nytt
             //_productSubject = productSubject ?? new ProductSubject();
 
+
             // Registrera standardobservatörer
-            //_productSubject.Attach(new EmailNotification());
+            _productSubject.Attach(new EmailNotification());
+            _productSubject.Attach(new SmsNotification());
+            _productSubject.Attach(new PushNotification());
+
         }
 
         //Denna metod hanterar vilken typ av Entity som kommer in och returnerar rätt repository
@@ -65,6 +66,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
         {
             _context.Dispose();
         }
+
 
 
         public void NotifyProductAdded(Product product)
