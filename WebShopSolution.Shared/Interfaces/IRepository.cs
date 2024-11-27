@@ -1,4 +1,4 @@
-﻿namespace WebShopSolution.DataAccess.Repositories;
+﻿namespace WebShopSolution.Shared.Interfaces;
 
 public interface IRepository <TEntity> where TEntity : class
 {

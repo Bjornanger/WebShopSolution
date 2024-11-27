@@ -1,4 +1,6 @@
-﻿namespace WebShopSolution.DataAccess.Repositories.Customer;
+﻿using WebShopSolution.Shared.Interfaces;
+
+namespace WebShopSolution.DataAccess.Repositories.Customer;
 
 public interface ICustomerRepository : IRepository<Entities.Customer>
 {

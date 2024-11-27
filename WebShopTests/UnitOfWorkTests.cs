@@ -7,6 +7,7 @@ using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Orders;
 using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests
 {
@@ -28,11 +29,10 @@ namespace WebShopTests
 
             _unitOfWork = A.Fake<IUnitOfWork>();
         }
-
-
+        
 
         [Fact]
-        public void RepositoryMethodThruUnitOfWork_ReturnsProductRepository()
+        public void RepositoryMethod_ThruUnitOfWork_ReturnsProductRepository()
         {
             // Arrange
             A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
@@ -42,11 +42,11 @@ namespace WebShopTests
 
             // Assert
             Assert.Equal(_productRepository, result);
-
+            Assert.IsAssignableFrom<IRepository<Product>>(result);
             A.CallTo(() => _unitOfWork.Repository<Product>()).MustHaveHappened();
         }
         [Fact]
-        public  void RepositoryMethodThruUnitOfWork_ReturnsCustomerRepository()
+        public  void RepositoryMethod_ThruUnitOfWork_ReturnsCustomerRepository()
         {
             // Arrange
             A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
@@ -56,11 +56,11 @@ namespace WebShopTests
 
             // Assert
             Assert.Equal(_customerRepository, result);
-
+            Assert.IsAssignableFrom<IRepository<Customer>>(result);
             A.CallTo(() => _unitOfWork.Repository<Customer>()).MustHaveHappened();
         }
         [Fact]
-        public  void RepositoryMethodThruUnitOfWork_ReturnsOrderRepository()
+        public  void RepositoryMethod_ThruUnitOfWork_ReturnsOrderRepository()
         {
             // Arrange
             A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
@@ -70,9 +70,10 @@ namespace WebShopTests
 
             // Assert
             Assert.Equal(_orderRepository, result);
-
+            Assert.IsAssignableFrom<IRepository<Order>>(result);
             A.CallTo(() => _unitOfWork.Repository<Order>()).MustHaveHappened();
         }
+
         [Fact]
         public async Task CompleteAsync_CallsTheMethod()
         {
@@ -85,6 +86,7 @@ namespace WebShopTests
             // Assert
             A.CallTo(() => _unitOfWork.CompleteAsync()).MustHaveHappened();
         }
+        
         [Fact]
         public void Dispose_CallsTheMethodDispose()
         {

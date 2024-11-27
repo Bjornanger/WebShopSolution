@@ -4,6 +4,7 @@ using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories.Orders;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests.ControllerTest;
 
@@ -21,44 +22,27 @@ public class OrderControllerTests
 
         _orderController = new OrderController(_unitOfWork);
     }
+    
+    #region DeleteOrder
 
-
-    //Arrange
-    //Act
-    //Assert
     [Fact]
-    public async Task DeleteOrder_WithINvalidInput_ReturnsNotFound404()
+    public async Task DeleteOrder_WithInvalidInput_ReturnsNotFound404()
     {
         //Arrange
-        Order order = new Order
-        {
-            Id = 2,
-            CustomerId = 23,
-            Customer = new Customer
-            {
-                Id = 23,
-                FirstName = "Mikael",
-                LastName = "Blazor",
-                Email = "haha@Live.se",
-                Password = "Hej123",
-                Orders = null
-            },
-            OrderProducts = new List<OrderItem>(),
-            Quantity = 0
-        };
-
         A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
-        A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).Returns(Task.FromResult<Order>(order));
         A.CallTo(() => _orderRepository.GetByIdAsync(58)).Returns(Task.FromResult<Order>(null));
-        
+
         //Act
         var result = await _orderController.DeleteOrder(58);
+
         //Assert
         var notFound = Assert.IsType<NotFoundResult>(result);
-        Assert.False(false);
         Assert.Equal(404, notFound.StatusCode);
-    }
 
+        A.CallTo(() => _orderRepository.GetByIdAsync(58)).MustHaveHappened();
+        A.CallTo(() => _orderRepository.RemoveAsync(58)).MustNotHaveHappened();
+
+    }
 
     [Fact]
     public async Task DeleteOrder_WithValidInput_ReturnsOK()
@@ -80,15 +64,20 @@ public class OrderControllerTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 0
         };
+        A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
+        A.CallTo(() => _orderRepository.GetByIdAsync(58)).Returns(Task.FromResult<Order>(null));
 
-        await _orderController.AddOrder(order);
         //Act
 
         var result = await _orderController.DeleteOrder(order.Id);
         //Assert
         Assert.IsType<OkResult>(result);
+        A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).MustHaveHappened();
+        A.CallTo(() => _orderRepository.RemoveAsync(order.Id)).MustHaveHappened();
+
     }
 
+    #endregion
 
     #region GetOrderById
     [Fact]

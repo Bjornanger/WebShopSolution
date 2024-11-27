@@ -2,6 +2,7 @@
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests.RepositoryTest;
 
@@ -12,7 +13,7 @@ public class CustomerRepositoryTests
 
     public CustomerRepositoryTests()
     {
-        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabase")
+        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabaseCustomer")
             .Options;
 
         _InMemoryContext = new MyDbContext(options);
@@ -46,7 +47,6 @@ public class CustomerRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetByIdAsync_ReturnsCorrectCustomer()
     {
@@ -78,12 +78,10 @@ public class CustomerRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetAllAsync_ReturnsAllCustomers()
     {
         // Arrange
-
         Customer Johnny = new Customer
         {
             Id = 36,
@@ -116,7 +114,6 @@ public class CustomerRepositoryTests
         await _InMemoryContext.Database.EnsureDeletedAsync();
 
     }
-
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList()
     {
@@ -140,12 +137,8 @@ public class CustomerRepositoryTests
             Password = "DaxWax3",
             Orders = null
         };
-
-        await _InMemoryContext.AddAsync(Johnny);
-        await _InMemoryContext.AddAsync(Samuraj);
-
+        
         // Act
-
         var result = await _repository.GetAllAsync();
 
         // Assert
@@ -153,7 +146,6 @@ public class CustomerRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_AddsCustomer_ReturnsTrue()
     {
@@ -175,7 +167,6 @@ public class CustomerRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_AddsCustomer_ReturnsFalse()
     {
@@ -190,7 +181,6 @@ public class CustomerRepositoryTests
 
 
     }
-
     [Fact]
     public async Task UpdateAsync_UpdatesCustomer_ReturnsTrue_UpdatedCustomer()
     {
@@ -227,7 +217,6 @@ public class CustomerRepositoryTests
         await _InMemoryContext.Database.EnsureDeletedAsync();
 
     }
-
     [Fact]//Pga inbyggd EntityFramework funktionalitet så kan jag inte testa Update en fullskalig metod.
     public async Task UpdateAsync_UpdatesCustomer_ReturnsNull()
     {
@@ -240,7 +229,6 @@ public class CustomerRepositoryTests
         // Assert
         Assert.Null(result);
     }
-
     [Fact]
     public async Task RemoveAsync_RemoveCustomer_ReturnsTrue()
     {

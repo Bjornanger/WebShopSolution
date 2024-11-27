@@ -5,6 +5,7 @@ using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 using A = FakeItEasy.A;
 
 namespace WebShopTests.ControllerTest;
@@ -22,10 +23,10 @@ public class ProductControllerTests
         _productRepository = A.Fake<IProductRepository>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
-        _controller = A.Fake<ProductController>();
+
 
         // Initialisera controller
-        
+        _controller = new ProductController(_unitOfWork);
 
     }
 
@@ -35,25 +36,22 @@ public class ProductControllerTests
     public async Task DeleteProduct_WithInvalidInput_ReturnNotFound404()
     {
         //Arrange
-        var product = A.Dummy<Product>();
-
-        //A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
-        //A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
-        //A.CallTo(() => _productRepository.GetByIdAsync(345)).Returns(Task.FromResult<Product>(null));
-        A.CallTo(() => _controller.DeleteProduct(product.Id)).Returns(Task.FromResult<ActionResult>(null));
+        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        A.CallTo(() => _productRepository.GetByIdAsync(56)).Returns(Task.FromResult<Product>(null));
+        
         //Act
-        var result = await _controller.DeleteProduct(product.Id);
-
+        var result = await _controller.DeleteProduct(56);
 
         //Assert
-        var NotFoundObject = Assert.IsType<ObjectResult>(result);
-        Assert.False(false);
+        var NotFoundObject = Assert.IsType<NotFoundResult>(result);
         Assert.Equal(404, NotFoundObject.StatusCode);
-        A.CallTo(() => _controller.DeleteProduct(product.Id)).MustHaveHappened();
+
+        A.CallTo(() => _productRepository.GetByIdAsync(56)).MustHaveHappened();
+        A.CallTo(()=> _productRepository.RemoveAsync(56)).MustNotHaveHappened();
     }
 
     [Fact]
-    public async Task DeleteProduct_WithValidInput_ReturnOk()
+    public async Task DeleteProduct_WithValidInput_ReturnOk200()
     {
         //Arrange
         Product product = new Product
@@ -64,11 +62,10 @@ public class ProductControllerTests
             Stock = 20,
             OrderProducts = null
         };
-
-        _productRepository.AddAsync(product);
-
+        A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
+        
         //Act
-        var result = await _controller.DeleteProduct(1);
+        var result = await _controller.DeleteProduct(product.Id);
 
 
         //Assert
@@ -76,6 +73,8 @@ public class ProductControllerTests
         Assert.True(true);
         Assert.Equal(200, okObject.StatusCode);
         Assert.Equal("Ok", okObject.Value);
+        A.CallTo(() => _productRepository.RemoveAsync(product.Id)).MustHaveHappened();
+
     }
     #endregion
 
@@ -103,11 +102,11 @@ public class ProductControllerTests
             Stock = 50,
             OrderProducts = null
         };
-        
+
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(product));
         A.CallTo(() => _productRepository.UpdateAsync(product)).Returns(productWithUpdatedValue);
-        
+
         //Act
 
         var result = await _controller.UpdateProduct(product.Id, productWithUpdatedValue);
@@ -137,7 +136,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task UpdateProduct_ThrowException_ActivateDisposeAndSendStatusCode500()
+    public async Task UpdateProduct_ThrowExceptionInTryCatch_ActivateDisposeAndSendStatusCode500()
     {
         //Arrange
         var product = A.Dummy<Product>();
@@ -192,7 +191,7 @@ public class ProductControllerTests
     #region GetAllProducts
 
     [Fact]
-    public async Task GetAllProducts_ThrowException_ActivateDisposeAndSendStatusCode500()
+    public async Task GetAllProducts_ThrowExceptionInTryCatch_ActivateDisposeAndSendStatusCode500()
     {
 
         //Arrange
@@ -221,11 +220,11 @@ public class ProductControllerTests
         //Arrange
 
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
-        A.CallTo(()=> _productRepository.GetAllAsync()).Returns(Task.FromResult<IEnumerable<Product>>(null));
+        A.CallTo(() => _productRepository.GetAllAsync()).Returns(Task.FromResult<IEnumerable<Product>>(null));
 
         //Act
         var result = await _controller.GetAllProducts();
-        
+
         //Assert
         var actionResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
         var notFoundResult = Assert.IsType<NotFoundResult>(actionResult.Result);
@@ -240,8 +239,8 @@ public class ProductControllerTests
     {
         // Arrange
 
-        var fakeProductList = A.CollectionOfDummy <Product>(4);
-        
+        var fakeProductList = A.CollectionOfDummy<Product>(4);
+
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetAllAsync())
             .Returns(Task.FromResult((IEnumerable<Product>)(fakeProductList)));
@@ -253,7 +252,7 @@ public class ProductControllerTests
 
         // Assert
 
-        var actionResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result); 
+        var actionResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(okResult.Value);
 
@@ -261,7 +260,7 @@ public class ProductControllerTests
         Assert.True(productList.Any());
         Assert.Equal(4, productList.Count());
 
-        A.CallTo(()=> _productRepository.GetAllAsync()).MustHaveHappened();
+        A.CallTo(() => _productRepository.GetAllAsync()).MustHaveHappened();
 
     }
 
@@ -324,13 +323,13 @@ public class ProductControllerTests
             OrderProducts = null
 
         };
-        
+
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _productRepository.GetByIdAsync(product.Id)).Returns(Task.FromResult(expectedProduct));
 
         // Act
         var result = await _controller.GetProductById(product.Id);
-        
+
         // Assert
         var actionResult = Assert.IsType<ActionResult<Product>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
@@ -374,7 +373,7 @@ public class ProductControllerTests
             OrderProducts = null
         };
         _controller.ModelState.AddModelError("Name", "Name is required");
-        
+
         //Act
         var result = await _controller.AddProduct(product);
 
@@ -417,19 +416,19 @@ public class ProductControllerTests
             Stock = 4,
             OrderProducts = null
         };
-        
+
         //Act
         var result = await _controller.AddProduct(product);
 
         //Assert
-        
+
         var actionResult = Assert.IsType<OkResult>(result);
         Assert.Equal(200, actionResult.StatusCode);
-        
+
     }
 
     [Fact]
-    public async Task AddProduct_WithInvalidInput_ReturnStatusCode500()
+    public async Task AddProduct_WithInvalidInput_ReturnStatusCode400()
     {
         //Arrange
 

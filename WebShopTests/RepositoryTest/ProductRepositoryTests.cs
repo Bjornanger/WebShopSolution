@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests.RepositoryTest;
 
@@ -14,7 +15,7 @@ public class ProductRepositoryTests
     
     public ProductRepositoryTests()
     {
-        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabase")
+        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabaseProduct")
             .Options;
 
         _InMemoryContext = new MyDbContext(options);
@@ -48,7 +49,6 @@ public class ProductRepositoryTests
         Assert.Equal(product.Price, result.Price);
         Assert.Equal(product.Stock, result.Stock);
         Assert.Equal(product, result);
-       
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -70,12 +70,9 @@ public class ProductRepositoryTests
 
         // Act
         var result = await _repository.GetByIdAsync(812);
+
         // Assert
-
         Assert.Null(result);
-
-        
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
 

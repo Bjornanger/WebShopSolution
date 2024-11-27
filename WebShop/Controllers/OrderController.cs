@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShop.Controllers
 {

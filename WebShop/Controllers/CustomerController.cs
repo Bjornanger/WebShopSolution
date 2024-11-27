@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShop.Controllers
 {
@@ -138,9 +139,10 @@ namespace WebShop.Controllers
                 {
                     return NotFound();
                 }
-                customerRepository.RemoveAsync(customerToDelete.Id);
+
+               await customerRepository.RemoveAsync(customerToDelete.Id);
                 await _unitOfWork.CompleteAsync();
-                return Ok();
+                return StatusCode(200, "Ok");
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests.RepositoryTest;
 
@@ -12,7 +13,7 @@ public class OrderRepositoryTests
 
     public OrderRepositoryTests()
     {
-        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabase")
+        var options = new DbContextOptionsBuilder<MyDbContext>().UseInMemoryDatabase(databaseName: "MyTestDatabaseOrder")
             .Options;
 
         _InMemoryContext = new MyDbContext(options);

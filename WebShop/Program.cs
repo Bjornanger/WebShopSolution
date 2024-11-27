@@ -5,6 +5,7 @@ using WebShopSolution.DataAccess.Entities;
 
 using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

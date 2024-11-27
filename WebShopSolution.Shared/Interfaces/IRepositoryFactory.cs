@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace WebShopSolution.DataAccess.Repositories;
+﻿namespace WebShopSolution.Shared.Interfaces;
 
 public interface IRepositoryFactory
 {

@@ -9,6 +9,7 @@ using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopTests.ControllerTest;
 
@@ -29,14 +30,38 @@ public class CustomerControllerTests
         _controller = new CustomerController(_unitOfWork);
     }
 
-    //Arrange
-    //Act
-    //Assert
+    
 
     #region DeleteCustomer
 
     [Fact]
     public async Task DeleteCustomer_WithInValidInput_ReturnsNotFound404()
+    {
+        //Arrange
+
+      
+        A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
+       
+        A.CallTo(() => _customerRepository.GetByIdAsync(56)).Returns(Task.FromResult<Customer>(null));
+        
+
+        //Act
+        var result = await _controller.DeleteCustomer(56);
+
+        //Assert
+        var NotFoundObject = Assert.IsType<NotFoundResult>(result);
+        Assert.Equal(404, NotFoundObject.StatusCode);
+
+        A.CallTo(() => _customerRepository.GetByIdAsync(56)).MustHaveHappened();
+        A.CallTo(() => _customerRepository.RemoveAsync(56)).MustNotHaveHappened();
+
+
+    }
+
+
+
+    [Fact]
+    public async Task DeleteCustomer_WithValidInput_ReturnsOk200()
     {
         //Arrange
 
@@ -49,48 +74,18 @@ public class CustomerControllerTests
             Password = "Hejsan123"
         };
         A.CallTo(() => _unitOfWork.Repository<Customer>()).Returns(_customerRepository);
-        A.CallTo(() => _customerRepository.GetByIdAsync(customer.Id)).Returns(Task.FromResult(customer));
-        A.CallTo(() => _customerRepository.GetByIdAsync(56)).Returns(Task.FromResult<Customer>(null));
-
-
+        A.CallTo(() => _customerRepository.GetByIdAsync(customer.Id)).Returns(customer);
+        
         //Act
-
-        var result = await _controller.DeleteCustomer(56);
-
-        //Assert
-        var NotFoundObject = Assert.IsType<NotFoundResult>(result);
-        Assert.False(false);
-        Assert.Equal(404, NotFoundObject.StatusCode);
-
-        A.CallTo(() => _customerRepository.GetByIdAsync(56)).MustHaveHappened();
-
-
-    }
-
-
-
-    [Fact]
-    public async Task DeleteCustomer_WithValidInput_ReturnsOkResult()
-    {
-        //Arrange
-
-        Customer customer = new Customer()
-        {
-            Id = 3,
-            FirstName = "Kalle",
-            LastName = "Anka",
-            Email = "Ankeborg@Blazor.com",
-            Password = "Hejsan123"
-        };
-
-        await _controller.AddCustomer(customer);
-        //Act
-
         var result = await _controller.DeleteCustomer(customer.Id);
 
         //Assert
-        Assert.IsType<OkResult>(result);
+        var okObject = Assert.IsType<ObjectResult>(result);
+        Assert.True(true);
+        Assert.Equal(200, okObject.StatusCode);
+        Assert.Equal("Ok", okObject.Value);
 
+        A.CallTo(() => _customerRepository.RemoveAsync(customer.Id)).MustHaveHappened();
     }
 
 

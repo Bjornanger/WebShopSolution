@@ -6,6 +6,7 @@ using WebShopSolution.DataAccess.Repositories;
 using WebShopSolution.DataAccess.Repositories.Customer;
 using WebShopSolution.DataAccess.Repositories.Orders;
 using WebShopSolution.DataAccess.Repositories.Products;
+using WebShopSolution.Shared.Interfaces;
 
 namespace WebShopSolution.DataAccess.UnitOfWork
 {
@@ -13,8 +14,6 @@ namespace WebShopSolution.DataAccess.UnitOfWork
     {
         // Hämta repository
         private readonly MyDbContext _context;
-        
-        
         public IRepositoryFactory _repositoryFactory { get; }
         private readonly Dictionary<Type, object> _repositories;
         
