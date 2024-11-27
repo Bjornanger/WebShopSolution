@@ -4,8 +4,8 @@ WORKDIR /src
 
 # Copy project files
 COPY ["WebShop/WebShop.csproj", "./WebShop/"]
-COPY ["WebShopSolution.DataAccess/WebShopSolution.DataAccess.csproj","./WebShopSolution.DataAccess"]
-COPY ["WebShopSolution.Shared/WebShopSolution.Shared.csproj","./WebShopSolution.Shared"]
+COPY ["WebShopSolution.DataAccess/WebShopSolution.DataAccess.csproj","./WebShopSolution.DataAccess/"]
+COPY ["WebShopSolution.Shared/WebShopSolution.Shared.csproj","./WebShopSolution.Shared/"]
 COPY ["WebShopTests/WebShopTests.csproj", "./WebShopTests/"]
 
 # Restore dependencies
