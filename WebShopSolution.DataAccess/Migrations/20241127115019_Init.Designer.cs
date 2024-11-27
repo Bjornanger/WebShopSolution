@@ -11,7 +11,7 @@ using WebShopSolution.DataAccess.Data;
 namespace WebShopSolution.DataAccess.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241120150659_Init")]
+    [Migration("20241127115019_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -32,11 +32,19 @@ namespace WebShopSolution.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -72,6 +80,9 @@ namespace WebShopSolution.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("OrderId", "ProductId");
