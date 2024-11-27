@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using WebShopSolution.DataAccess.Entities;
-
+using WebShopSolution.DataAccess.Strategy;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -13,10 +13,14 @@ namespace WebShop.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DiscountContext _discountContext;
+        private readonly DiscountStrategyFactory _discountStrategyFactory;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, DiscountContext discountContext, DiscountStrategyFactory discountStrategyFactory)
         {
             _unitOfWork = unitOfWork;
+            _discountContext = discountContext;
+            _discountStrategyFactory = discountStrategyFactory;
         }
 
 
@@ -32,8 +36,13 @@ namespace WebShop.Controllers
             try
             {
                 var productRepository = _unitOfWork.Repository<Product>();
-               
-                productRepository.AddAsync(product);
+                var currentDate = new DateTime(2024, 11, 29);//BlackFriday
+
+                var discountStrategy = _discountStrategyFactory.GetDiscountStrategy(currentDate);
+                _discountContext.SetDiscountStrategy(discountStrategy);
+                product.Price = _discountContext.GetDiscountPeriod(product);
+
+               await productRepository.AddAsync(product);
                 
                 await _unitOfWork.CompleteAsync();
                 return Ok();
@@ -62,12 +71,26 @@ namespace WebShop.Controllers
                     return NotFound();
                 var productList = await productRepository.GetAllAsync();
 
-                if (productList is null || !productList.Any())
+
+                List<Product> updatedProductListWithDiscount = new List<Product>();
+                foreach (var product in productList)
+                {
+
+                    var currentDate = DateTime.Now;
+                    var discountStrategy = _discountStrategyFactory.GetDiscountStrategy(currentDate);
+                    _discountContext.SetDiscountStrategy(discountStrategy);
+                    product.Price = _discountContext.GetDiscountPeriod(product);
+                    updatedProductListWithDiscount.Add(product);
+                    
+
+                }
+                
+                if (updatedProductListWithDiscount is null || !updatedProductListWithDiscount.Any())
                 {
                     return NotFound();
                 }
 
-                return Ok(productList);
+                return Ok(updatedProductListWithDiscount);
 
             }
             catch (Exception e)
@@ -94,6 +117,11 @@ namespace WebShop.Controllers
                 {
                     return NotFound();
                 }
+
+                var currentDate = DateTime.Now;
+                var discountStrategy = _discountStrategyFactory.GetDiscountStrategy(currentDate);
+                _discountContext.SetDiscountStrategy(discountStrategy);
+                product.Price = _discountContext.GetDiscountPeriod(product);
 
                 return Ok(product);
             }
@@ -130,7 +158,7 @@ namespace WebShop.Controllers
                 productToUpdate.Name = product.Name;
                 productToUpdate.Price = product.Price;
                 productToUpdate.Stock = product.Stock;
-
+                
                 await productRepository.UpdateAsync(productToUpdate);
 
                 await _unitOfWork.CompleteAsync();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
+using WebShopSolution.DataAccess.Strategy;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 using A = FakeItEasy.A;
@@ -13,21 +14,21 @@ public class ProductControllerTests
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRepository<Product> _productRepository;
-
+    private readonly DiscountStrategyFactory _discountStrategyFactory;
+    private readonly DiscountContext _discountContext;
     private readonly ProductController _controller;
 
     public ProductControllerTests()
     {
 
         // Initialisera fakes
-        _productRepository = A.Fake<IRepository<Product>>();
         _unitOfWork = A.Fake<IUnitOfWork>();
-
-
+        _productRepository = A.Fake<IRepository<Product>>();
+        _discountContext = A.Fake<DiscountContext>();
+        _discountStrategyFactory = A.Fake<DiscountStrategyFactory>();
 
         // Initialisera controller
-        _controller = new ProductController(_unitOfWork);
-
+        _controller = new ProductController(_unitOfWork, _discountContext, _discountStrategyFactory);
     }
 
     #region DeleteProducts
