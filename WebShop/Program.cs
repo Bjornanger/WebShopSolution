@@ -18,8 +18,8 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Registrera Unit of Work i DI-container
 
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();

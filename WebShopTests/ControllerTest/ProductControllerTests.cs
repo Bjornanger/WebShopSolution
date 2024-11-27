@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
-using WebShopSolution.DataAccess.Repositories.Products;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 using A = FakeItEasy.A;
@@ -13,14 +12,15 @@ namespace WebShopTests.ControllerTest;
 public class ProductControllerTests
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IProductRepository _productRepository;
+    private readonly IRepository<Product> _productRepository;
+
     private readonly ProductController _controller;
 
     public ProductControllerTests()
     {
 
         // Initialisera fakes
-        _productRepository = A.Fake<IProductRepository>();
+        _productRepository = A.Fake<IRepository<Product>>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
 

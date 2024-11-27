@@ -6,8 +6,8 @@ using WebShop.Controllers;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Repositories;
-using WebShopSolution.DataAccess.Repositories.Customer;
-using WebShopSolution.DataAccess.Repositories.Products;
+
+
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -17,14 +17,14 @@ public class CustomerControllerTests
 {
 
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICustomerRepository _customerRepository;
+    private readonly IRepository<Customer> _customerRepository;
     private readonly CustomerController _controller;
 
 
 
     public CustomerControllerTests()
     {
-        _customerRepository = A.Fake<ICustomerRepository>();
+        _customerRepository = A.Fake<IRepository<Customer>>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
         _controller = new CustomerController(_unitOfWork);

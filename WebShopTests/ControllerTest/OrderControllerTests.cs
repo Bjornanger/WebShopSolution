@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
-using WebShopSolution.DataAccess.Repositories.Orders;
+
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -11,13 +11,13 @@ namespace WebShopTests.ControllerTest;
 public class OrderControllerTests
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IOrderRepository _orderRepository;
+    private readonly IRepository<Order> _orderRepository;
     private readonly OrderController _orderController;
 
 
     public OrderControllerTests()
     {
-        _orderRepository = A.Fake<IOrderRepository>();
+        _orderRepository = A.Fake<IRepository<Order>>();
         _unitOfWork = A.Fake<IUnitOfWork>();
 
         _orderController = new OrderController(_unitOfWork);

@@ -18,8 +18,4 @@
     <ProjectReference Include="..\WebShopSolution.Shared\WebShopSolution.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\Customer\" />
-  </ItemGroup>
-
 </Project>

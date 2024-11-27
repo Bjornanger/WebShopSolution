@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using WebShopSolution.DataAccess.Entities;
-using WebShopSolution.DataAccess.Repositories.Products;
+
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
