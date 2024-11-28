@@ -35,16 +35,14 @@ public class CustomerRepositoryTests
             Password = "DaxWax",
             Orders = null
         };
-
         await _InMemoryContext.AddAsync(customer);
         await _InMemoryContext.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(377);
+
         // Assert
-
         Assert.Null(result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -60,22 +58,19 @@ public class CustomerRepositoryTests
             Password = "DaxWax",
             Orders = null
         };
-
         await _InMemoryContext.AddAsync(customer);
         await _InMemoryContext.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByIdAsync(3);
-        // Assert
 
+        // Assert
         Assert.Equal(customer.Id, result.Id);
         Assert.Equal(customer.FirstName, result.FirstName);
         Assert.Equal(customer.LastName, result.LastName);
         Assert.Equal(customer.Email, result.Email);
         Assert.Equal(customer.Password, result.Password);
-
         Assert.Equal(customer, result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -104,15 +99,13 @@ public class CustomerRepositoryTests
         await _InMemoryContext.AddAsync(Johnny);
         await _InMemoryContext.AddAsync(Samuraj);
         await _InMemoryContext.SaveChangesAsync();
-        // Act
 
+        // Act
         var result = await _repository.GetAllAsync();
 
         // Assert
         Assert.Equal(new List<Customer> { Johnny, Samuraj }, result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
-
     }
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList()
@@ -143,7 +136,6 @@ public class CustomerRepositoryTests
 
         // Assert
         Assert.Equal([], result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -164,7 +156,6 @@ public class CustomerRepositoryTests
 
         // Assert
         Assert.True(result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -211,13 +202,11 @@ public class CustomerRepositoryTests
 
         //Assert
         Assert.NotEqual(customerNameBeforeUpdate, result.FirstName);
-
         Assert.True(true);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
 
     }
-    [Fact]//Pga inbyggd EntityFramework funktionalitet så kan jag inte testa Update en fullskalig metod.
+    [Fact]
     public async Task UpdateAsync_UpdatesCustomer_ReturnsNull()
     {
         // Arrange
@@ -242,14 +231,12 @@ public class CustomerRepositoryTests
             Password = "DaxWax",
             Orders = null
         };
-
         await _InMemoryContext.AddAsync(customer);
         await _InMemoryContext.SaveChangesAsync();
 
         //Act
         var result = await _repository.RemoveAsync(customer.Id);
         await _InMemoryContext.SaveChangesAsync();
-
         var checkIfCustomerExists = await _repository.GetByIdAsync(99);
 
         //Assert
@@ -281,7 +268,6 @@ public class CustomerRepositoryTests
         
         //Assert
         Assert.False(result);
-   
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
 }

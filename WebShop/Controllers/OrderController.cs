@@ -18,7 +18,6 @@ namespace WebShop.Controllers
         private readonly DiscountStrategyFactory _discountStrategyFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-
         public OrderController(IUnitOfWork unitOfWork, DiscountContext discountContext, DiscountStrategyFactory discountStrategyFactory, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
@@ -26,8 +25,7 @@ namespace WebShop.Controllers
             _discountStrategyFactory = discountStrategyFactory;
             _dateTimeProvider = dateTimeProvider;
         }
-
-
+        
         [HttpPost]
         public async Task<ActionResult> AddOrder([FromBody]  Order order)
         {
@@ -94,7 +92,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
         {
@@ -115,7 +112,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
@@ -136,7 +132,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpPut]
         public async Task<ActionResult> UpdateOrder([FromBody] Order order)
         {
@@ -162,8 +157,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrder(int id)
         {
@@ -186,10 +179,5 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-
-
-
-
     }
 }

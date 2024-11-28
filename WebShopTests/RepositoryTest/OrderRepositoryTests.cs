@@ -41,7 +41,6 @@ public class OrderRepositoryTests
         Assert.Null(result);
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetByIdAsync_ReturnsOrder()
     {
@@ -68,10 +67,8 @@ public class OrderRepositoryTests
         var result = await _repository.GetByIdAsync(2);
         // Assert
         Assert.Equal(order, result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetAllAsync_ReturnsAllOrders()
     {
@@ -117,12 +114,9 @@ public class OrderRepositoryTests
         var result = await _repository.GetAllAsync();
 
         //Assert
-
         Assert.Equal(new List<Order> { order, order2 }, result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetAllAsync_ReturnsEmptyList()
     {
@@ -160,7 +154,6 @@ public class OrderRepositoryTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 2
         };
-
         await _InMemoryContext.AddAsync(order);
         await _InMemoryContext.AddAsync(order2);
         
@@ -169,10 +162,8 @@ public class OrderRepositoryTests
 
         //Assert
         Assert.Equal([], result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_ReturnsTrue()
     {
@@ -205,7 +196,6 @@ public class OrderRepositoryTests
 
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_ReturnsFalse()
     {
@@ -219,7 +209,6 @@ public class OrderRepositoryTests
         Assert.False(result);
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task UpdateAsync_UpdatesOrder_ReturnsTrue_AndUpdatedOrder()
     {
@@ -244,13 +233,10 @@ public class OrderRepositoryTests
         var orderQuantityBeforeUpdate = 2;
         await _InMemoryContext.AddAsync(order);
         await _InMemoryContext.SaveChangesAsync();
-
         var orderToUpdate = await _repository.GetByIdAsync(order.Id);
-
         orderToUpdate.Quantity = 3;
 
         //Act
-
         await _repository.UpdateAsync(orderToUpdate);
         await _InMemoryContext.SaveChangesAsync();
         var result = await _repository.GetByIdAsync(orderToUpdate.Id);
@@ -259,11 +245,8 @@ public class OrderRepositoryTests
         Assert.Equal(3, result.Quantity);
         Assert.True(true);
         Assert.NotEqual(orderQuantityBeforeUpdate, result.Quantity);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
-
     }
-
     [Fact]
     public async Task UpdateAsync_UpdatesOrder_ReturnsNull()
     {
@@ -276,7 +259,6 @@ public class OrderRepositoryTests
         // Assert
         Assert.Null(result);
     }
-
     [Fact]
     public async Task RemoveAsync_RemoveOrder_ReturnsTrue()
     {
@@ -300,20 +282,18 @@ public class OrderRepositoryTests
 
         await _InMemoryContext.AddAsync(order);
         await _InMemoryContext.SaveChangesAsync();
+
         //Act
         var result = await _repository.RemoveAsync(order.Id);
         await _InMemoryContext.SaveChangesAsync();
-
         var checkIfGone = await _repository.GetByIdAsync(29);
 
         //Assert
         Assert.True(result);
         Assert.Null(checkIfGone);
         Assert.NotEqual(order, checkIfGone);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task RemoveAsync_RemoveOrder_ReturnsFalse()
     {
@@ -334,18 +314,17 @@ public class OrderRepositoryTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 2
         };
-
         var fakeId = 78;
 
         await _InMemoryContext.AddAsync(order);
         await _InMemoryContext.SaveChangesAsync();
+
         //Act
         var result = await _repository.RemoveAsync(fakeId);
         await _InMemoryContext.SaveChangesAsync();
 
         //Assert
         Assert.False(result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
 }

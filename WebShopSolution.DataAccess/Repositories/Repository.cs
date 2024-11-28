@@ -9,16 +9,13 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
 
     private readonly MyDbContext _context;
-
     private readonly DbSet<TEntity> _dbSet;
-
 
     public Repository(MyDbContext context)
     {
         this._context = context;
         this._dbSet = _context.Set<TEntity>();
     }
-
     public async Task<TEntity> GetByIdAsync(int id)
     {
         try

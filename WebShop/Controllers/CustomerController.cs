@@ -10,17 +10,12 @@ namespace WebShop.Controllers
     [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
-
         private readonly IUnitOfWork _unitOfWork;
-
         public CustomerController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-
-
-
-
+        
         [HttpPost]
         public async Task<ActionResult> AddCustomer([FromBody] Customer customer)   
         {
@@ -45,7 +40,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomers()
         {
@@ -60,7 +54,6 @@ namespace WebShop.Controllers
                     return NotFound();
                 }
 
-
                 return Ok(customersList);
             }
             catch (Exception e)
@@ -70,7 +63,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomerById(int id)
         {
@@ -94,7 +86,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateCustomer(int id, [FromBody] Customer customer)
         {
@@ -127,7 +118,6 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCustomer(int id)
         {
@@ -151,7 +141,5 @@ namespace WebShop.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-
     }
 }

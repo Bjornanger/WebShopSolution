@@ -33,7 +33,6 @@ public class OrderControllerTests
     }
     
     #region DeleteOrder
-
     [Fact]
     public async Task DeleteOrder_WithInvalidInput_ReturnsNotFound404()
     {
@@ -52,7 +51,6 @@ public class OrderControllerTests
         A.CallTo(() => _orderRepository.RemoveAsync(58)).MustNotHaveHappened();
 
     }
-
     [Fact]
     public async Task DeleteOrder_WithValidInput_ReturnsOK()
     {
@@ -85,7 +83,6 @@ public class OrderControllerTests
         A.CallTo(() => _orderRepository.RemoveAsync(order.Id)).MustHaveHappened();
 
     }
-
     #endregion
 
     #region GetOrderById
@@ -93,24 +90,17 @@ public class OrderControllerTests
     public async Task GetOrderById_WithInvalidInputAsNull_ReturnsNotFound()
     {
         //Arrange
-
         A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
         A.CallTo(() => _orderRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult<Order>(null));
 
-
         //Act
         var result = await _orderController.GetOrderById(1);
-        //Assert
 
+        //Assert
         var actionResult = Assert.IsType<ActionResult<Order>>(result);
         var notFoundResult = Assert.IsType<NotFoundResult>(actionResult.Result);
-
-
         Assert.Equal(404, notFoundResult.StatusCode);
     }
-
-
-
     [Fact]
     public async Task GetOrderById_WithValidInput_ReturnOrder()
     {
@@ -131,38 +121,27 @@ public class OrderControllerTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 0
         };
-
         A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
         A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).Returns(Task.FromResult(order));
-
         await _orderController.AddOrder(order);
 
         //Act
-
         var result = await _orderController.GetOrderById(order.Id);
 
         //Assert
-
         var actionResult = Assert.IsType<ActionResult<Order>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-
         var orderResult = Assert.IsAssignableFrom<Order>(okResult.Value);
-
         Assert.Equal(2, orderResult.Id);
-
         A.CallTo(() => _orderRepository.GetByIdAsync(order.Id)).MustHaveHappened();
     }
-
-
     #endregion
 
     #region GetAllOrders
-
     [Fact]
     public async Task GetAllOrders_ReturnNotFound()
     {
         //Arrange
-
         Order order = new Order
         {
 
@@ -171,29 +150,24 @@ public class OrderControllerTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 0
         };
-
         await _orderController.AddOrder(order);
 
         //Act
-
         var result = await _orderController.GetAllOrders();
+
         //Assert
         var actionResult = Assert.IsType<ActionResult<IEnumerable<Order>>>(result);
         var notFoundObject = Assert.IsType<NotFoundResult>(actionResult.Result);
         Assert.Equal(404, notFoundObject.StatusCode);
     }
-
     [Fact]
     public async Task GetAllOrders_ReturnOk_WithFakeListOfOrders()
     {
         //Arrange
-
         var fakeOrders = A.CollectionOfDummy<Order>(5);
-
         A.CallTo(() => _unitOfWork.Repository<Order>()).Returns(_orderRepository);
         A.CallTo(() => _orderRepository.GetAllAsync())
             .Returns(Task.FromResult((IEnumerable<Order>)(fakeOrders)));
-
 
         //Act
         var result = await _orderController.GetAllOrders();
@@ -202,15 +176,11 @@ public class OrderControllerTests
         var actionResult = Assert.IsType<ActionResult<IEnumerable<Order>>>(result);
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         var orderList = Assert.IsAssignableFrom<IEnumerable<Order>>(okResult.Value);
-
         Assert.NotEmpty(orderList);
         Assert.True(orderList.Any());
         Assert.Equal(5, orderList.Count());
-
         A.CallTo(() => _orderRepository.GetAllAsync()).MustHaveHappened();
-
     }
-
     #endregion
 
     #region AddOrder
@@ -235,15 +205,12 @@ public class OrderControllerTests
             Quantity = 2
         };
         //Act
-
         var result = await _orderController.AddOrder(order);
 
         //Assert
         var actionResult = Assert.IsType<OkObjectResult>(result);
-
         Assert.Equal(200, actionResult.StatusCode);
     }
-
     [Fact]
     public async Task AddOrder_WithInValidInput_BadRequest()
     {
@@ -264,21 +231,15 @@ public class OrderControllerTests
             OrderProducts = new List<OrderItem>(),
             Quantity = 2
         };
-
         _orderController.ModelState.AddModelError("FirstName", "Customer name are Required.");
-
-
+        
         //Act
-
         var result = await _orderController.AddOrder(order);
 
         //Assert
         var actionResult = Assert.IsType<BadRequestResult>(result);
-
         Assert.Equal(400, actionResult.StatusCode);
     }
-
-
     #endregion
 
 }

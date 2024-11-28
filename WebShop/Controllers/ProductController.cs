@@ -54,7 +54,6 @@ namespace WebShop.Controllers
             }
 
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
@@ -98,7 +97,6 @@ namespace WebShop.Controllers
             }
 
         }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
@@ -132,7 +130,6 @@ namespace WebShop.Controllers
 
 
         }
-
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
@@ -172,8 +169,6 @@ namespace WebShop.Controllers
 
 
         }
-
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
@@ -202,7 +197,6 @@ namespace WebShop.Controllers
             }
 
         }
-
     }
 }
 

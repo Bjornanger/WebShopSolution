@@ -50,16 +50,9 @@ public class IStrategyTests
         _controller = new ProductController(_unitOfWork, _discountContext, _discountStrategyFactory, _dateTimeProvider);
         _orderController = new OrderController(_unitOfWork, _discountContext, _discountStrategyFactory, _dateTimeProvider);
     }
-
     
 
-
-   
-
-
-
     #region TestCaseForOrderControllerWithDiscountStrategy
-
     [Fact]
     public async Task AddOrder_WithBlackFridayDiscount_ReturnsWithProductsOnDiscount()
     {
@@ -131,11 +124,9 @@ public class IStrategyTests
         A.CallTo(() => _discountContext.GetDiscountPeriod(productInOrder)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _unitOfWork.CompleteAsync()).MustHaveHappenedOnceExactly();
     }
-
     #endregion
 
     #region TestCasesForProductControllerWithDiscountStrategy
-
     [Fact]
     public async Task GetProductById_WithBlackFridayDiscount_ReturnsDiscountedProduct()
     {
@@ -229,8 +220,6 @@ public class IStrategyTests
         A.CallTo(() => _discountContext.GetDiscountPeriod(product)).MustHaveHappened();
 
     }
-
-
     #endregion
 
     #region DiscountStrategyFactoryTests
@@ -238,7 +227,6 @@ public class IStrategyTests
     public async Task GetDiscountStrategy_OnBlackFriday_ReturnsBlackFridayDiscount()
     {
         //Arrange
-
         var product = new Product
         {
             Id = 4,
@@ -247,9 +235,7 @@ public class IStrategyTests
             Stock = 23,
             OrderProducts = null
         };
-
         var blackFriday = new DateTime(2024, 11, 29);
-
         A.CallTo(() => _blackFridayDiscountStrategy.CalculatePrice(product)).Returns(50);
         A.CallTo(() => _discountStrategyFactory.GetDiscountStrategy(blackFriday)).Returns(_blackFridayDiscountStrategy);
 
@@ -265,11 +251,10 @@ public class IStrategyTests
         A.CallTo(() => _discountStrategyFactory.GetDiscountStrategy(blackFriday)).MustHaveHappened();
         A.CallTo(() => _blackFridayDiscountStrategy.CalculatePrice(product)).MustHaveHappened();
     }
-
     [Fact]
     public async Task GetDiscountStrategy_NoDiscount_ReturnsNoDiscount()
-    {//Arrange
-
+    {
+        //Arrange
         var product = new Product
         {
             Id = 4,
@@ -295,8 +280,6 @@ public class IStrategyTests
         A.CallTo(() => _discountStrategyFactory.GetDiscountStrategy(currenTime)).MustHaveHappened();
         A.CallTo(() => _noDiscountStrategy.CalculatePrice(product)).MustHaveHappened();
     }
-
-
     #endregion
 
 }

@@ -20,14 +20,13 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             _repositories = new Dictionary<Type, object>();
         }
 
-        //Denna metod hanterar vilken typ av Entity som kommer in och returnerar rätt repository
+        
         public IRepository<TEntity> Repository<TEntity>() where TEntity : class
         {
             if (_repositories.TryGetValue(typeof(TEntity), out var existingRepository))
             {
                 return (IRepository<TEntity>)existingRepository;
             }
-
             var repository = _repositoryFactory.CreateRepository<TEntity>();
             _repositories[typeof(TEntity)] = repository;
             return repository;
@@ -38,6 +37,7 @@ namespace WebShopSolution.DataAccess.UnitOfWork
             await _context.SaveChangesAsync();
         }
         
+
         public void Dispose()
         {
             _context.Dispose();

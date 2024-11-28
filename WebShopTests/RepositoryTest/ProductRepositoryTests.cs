@@ -35,15 +35,13 @@ public class ProductRepositoryTests
             Stock = 45,
             OrderProducts = null
         };
-        
         await _InMemoryContext.AddAsync(product);
         await _InMemoryContext.SaveChangesAsync();
 
-
         // Act
         var result = await _repository.GetByIdAsync(8);
-        // Assert
 
+        // Assert
         Assert.Equal(product.Id, result.Id);
         Assert.Equal(product.Name, result.Name);
         Assert.Equal(product.Price, result.Price);
@@ -63,10 +61,8 @@ public class ProductRepositoryTests
             Stock = 45,
             OrderProducts = null
         };
-
         await _InMemoryContext.AddAsync(product);
         await _InMemoryContext.SaveChangesAsync();
-
 
         // Act
         var result = await _repository.GetByIdAsync(812);
@@ -75,7 +71,6 @@ public class ProductRepositoryTests
         Assert.Null(result);
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task GetAllAsync_ReturnsAllProducts()
     {
@@ -103,9 +98,9 @@ public class ProductRepositoryTests
 
         // Act
         var result = await _repository.GetAllAsync();
+
         // Assert
         Assert.Equal(new List<Product> { socker, Plastflaska }, result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
     [Fact]
@@ -135,12 +130,11 @@ public class ProductRepositoryTests
 
         // Act
         var result = await _repository.GetAllAsync();
+
         // Assert
         Assert.Equal([], result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_AddsProduct_ReturnsTrue()
     {
@@ -153,14 +147,14 @@ public class ProductRepositoryTests
             Stock = 45,
             OrderProducts = null
         };
+
         // Act
         var result = await _repository.AddAsync(product);
+
         // Assert
         Assert.True(result);
-        
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task AddAsync_AddsProduct_ReturnsFalse()
     {
@@ -171,7 +165,6 @@ public class ProductRepositoryTests
         // Assert
         Assert.False(result);
     }
-
     [Fact]
     public async Task UpdateAsync_UpdatesProduct_ReturnsTrue_AndUpdatedObject()
     {
@@ -185,12 +178,9 @@ public class ProductRepositoryTests
             
         };
         var productNameBeforeUpdate = "Socker";
-
         await _InMemoryContext.AddAsync(product);
         await _InMemoryContext.SaveChangesAsync();
-
         var productToUpdate = await _repository.GetByIdAsync(product.Id);
-        
         productToUpdate.Name = "Plastpåse";
 
         // Act
@@ -200,13 +190,10 @@ public class ProductRepositoryTests
 
         // Assert
         Assert.NotEqual(productNameBeforeUpdate, result.Name);
-
         Assert.True(true);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
-    [Fact]//Pga inbyggd EntityFramework funktionalitet så kan jag inte testa Update en fullskalig metod.
+    [Fact]
     public async Task UpdateAsync_UpdatesProduct_ReturnsNull()
     {
         // Arrange
@@ -218,7 +205,6 @@ public class ProductRepositoryTests
         // Assert
         Assert.Null(result);
     }
-    
     [Fact]
     public async Task RemoveAsync_RemovesProduct_ReturnsTrue()
     {
@@ -234,22 +220,18 @@ public class ProductRepositoryTests
 
         await _InMemoryContext.AddAsync(productToRemove);
         await _InMemoryContext.SaveChangesAsync();
+
         // Act
         var result = await _repository.RemoveAsync(productToRemove.Id);
         await _InMemoryContext.SaveChangesAsync();
-
-
         var checkIfGone = await _repository.GetByIdAsync(61);
 
         // Assert
         Assert.True(result);
         Assert.Null(checkIfGone);
-
         Assert.NotEqual(productToRemove, checkIfGone);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
-
     [Fact]
     public async Task RemoveAsync_RemovesProduct_ReturnsFalse()
     {
@@ -265,13 +247,13 @@ public class ProductRepositoryTests
         var fakeId = 23;
         await _InMemoryContext.AddAsync(productToRemove);
         await _InMemoryContext.SaveChangesAsync();
+
         // Act
         var result = await _repository.RemoveAsync(fakeId);
         await _InMemoryContext.SaveChangesAsync();
 
         // Assert
         Assert.False(result);
-
         await _InMemoryContext.Database.EnsureDeletedAsync();
     }
 
