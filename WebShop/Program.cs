@@ -4,6 +4,8 @@ using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 
 using WebShopSolution.DataAccess.Repositories;
+using WebShopSolution.DataAccess.Strategy;
+using WebShopSolution.DataAccess.Strategy.DateTimeHelper;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -24,6 +26,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<DiscountStrategyFactory>();
+builder.Services.AddScoped<DiscountContext>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+
 
 
 

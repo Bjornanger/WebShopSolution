@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using WebShopSolution.DataAccess.Data;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.Shared.Interfaces;
@@ -39,7 +40,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         {
             return new List<TEntity>();
         } 
-        
     }
 
     public async Task<bool> AddAsync(TEntity entity)

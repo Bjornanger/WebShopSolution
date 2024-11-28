@@ -14,12 +14,12 @@ namespace WebShopSolution.DataAccess.UnitOfWork
         private readonly Dictionary<Type, object> _repositories;
         
 
-        public UnitOfWork(IRepositoryFactory factory)
+        public UnitOfWork(IRepositoryFactory factory, MyDbContext context)
         {
+            _context = context;
             _repositoryFactory = factory;
             _repositories = new Dictionary<Type, object>();
         }
-
         
         public IRepository<TEntity> Repository<TEntity>() where TEntity : class
         {

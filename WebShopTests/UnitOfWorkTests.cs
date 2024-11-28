@@ -89,9 +89,6 @@ namespace WebShopTests
         [Fact]
         public async Task CompleteAsync_CallsTheMethod()
         {
-            // Arrange
-            A.CallTo(() => _unitOfWork.CompleteAsync()).Returns(Task.CompletedTask);
-
             // Act
             await _unitOfWork.CompleteAsync();
 
@@ -104,7 +101,6 @@ namespace WebShopTests
         {
             //Arrange
             var product = A.Dummy<Product>();
-
 
             A.CallTo(() => _productRepository.GetByIdAsync(A<int>._)).Returns(Task.FromResult(product));
             A.CallTo(() => _productRepository.AddAsync(product)).Throws(new Exception("Test"));

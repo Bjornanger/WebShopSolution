@@ -27,7 +27,7 @@ namespace WebShop.Controllers
             {
                 var customerRepository = _unitOfWork.Repository<Customer>();
 
-                customerRepository.AddAsync(customer);
+                await customerRepository.AddAsync(customer);
                 await _unitOfWork.CompleteAsync();
                 return Ok();
                 

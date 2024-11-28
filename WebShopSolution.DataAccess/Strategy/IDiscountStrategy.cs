@@ -1,7 +1,6 @@
-﻿using System.Net.Http.Headers;
-using WebShopSolution.DataAccess.Entities;
+﻿using WebShopSolution.DataAccess.Entities;
 
-namespace WebShopSolution.Shared.Interfaces;
+namespace WebShopSolution.DataAccess.Strategy;
 
 public interface IDiscountStrategy
 {

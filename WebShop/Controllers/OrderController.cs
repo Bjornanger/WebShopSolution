@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query;
 using WebShopSolution.DataAccess.Entities;
 using WebShopSolution.DataAccess.Strategy;
 using WebShopSolution.DataAccess.Strategy.DateTimeHelper;
@@ -25,18 +26,15 @@ namespace WebShop.Controllers
             _discountStrategyFactory = discountStrategyFactory;
             _dateTimeProvider = dateTimeProvider;
         }
-        
+
         [HttpPost]
-        public async Task<ActionResult> AddOrder([FromBody]  Order order)
+        public async Task<ActionResult> AddOrder([FromBody] Order order)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-
-
             try
             {
-
                 var customer = await _unitOfWork.Repository<Customer>().GetByIdAsync(order.CustomerId);
                 if (customer is null)
                 {
@@ -54,7 +52,6 @@ namespace WebShop.Controllers
                     var discountStrategy = _discountStrategyFactory.GetDiscountStrategy(currentDate);
                     _discountContext.SetDiscountStrategy(discountStrategy);
                     product.Price = _discountContext.GetDiscountPeriod(product);
-
 
 
                     if (product is null)
@@ -79,7 +76,7 @@ namespace WebShop.Controllers
 
                 var orderRepository = _unitOfWork.Repository<Order>();
 
-               await orderRepository.AddAsync(order);
+                await orderRepository.AddAsync(order);
 
                 await _unitOfWork.CompleteAsync();
                 return Ok(order);
@@ -110,6 +107,7 @@ namespace WebShop.Controllers
                 _unitOfWork.Dispose();
                 Console.WriteLine(e);
                 return StatusCode(500, "Internal server error");
+
             }
         }
         [HttpGet("{id}")]
@@ -123,7 +121,44 @@ namespace WebShop.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(order);
+
+                var customerInOrder = await _unitOfWork.Repository<Customer>().GetByIdAsync(order.CustomerId);
+
+
+                Order orderToShow = new Order
+                {
+                    Id = order.Id,
+                    CustomerId = order.CustomerId,
+                    Customer = new Customer
+                    {
+                        Id = customerInOrder.Id,
+                        FirstName = customerInOrder.FirstName,
+                        LastName = customerInOrder.LastName,
+                        Email = customerInOrder.Email,
+                        Password = customerInOrder.Password,
+                        Orders = null
+                    },
+                    OrderProducts = order.OrderProducts.Select(oI => new OrderItem
+                    {
+                        OrderId = oI.OrderId,
+                        Order = null,
+                        ProductId = oI.ProductId,
+                        Product = new Product
+                        {
+                            Id = oI.Product.Id,
+                            Name = oI.Product.Name,
+                            Price = oI.Product.Price,
+                            Stock = oI.Product.Stock,
+                            OrderProducts = null
+                        },
+                        Quantity = oI.Quantity
+                    }).ToList(),
+
+                    Quantity = order.Quantity
+                };
+
+
+                return Ok(orderToShow);
             }
             catch (Exception e)
             {
