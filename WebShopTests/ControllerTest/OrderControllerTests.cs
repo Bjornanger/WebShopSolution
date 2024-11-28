@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Controllers;
 using WebShopSolution.DataAccess.Entities;
-
+using WebShopSolution.DataAccess.Strategy;
+using WebShopSolution.DataAccess.Strategy.DateTimeHelper;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -14,13 +15,21 @@ public class OrderControllerTests
     private readonly IRepository<Order> _orderRepository;
     private readonly OrderController _orderController;
 
+    private readonly IDiscountStrategy _discountStrategy;
+    private readonly DiscountStrategyFactory _discountStrategyFactory;
+    private readonly DiscountContext _discountContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
 
     public OrderControllerTests()
     {
         _orderRepository = A.Fake<IRepository<Order>>();
         _unitOfWork = A.Fake<IUnitOfWork>();
+        _discountStrategyFactory = A.Fake<DiscountStrategyFactory>();
+        _discountContext = A.Fake<DiscountContext>();
+        _dateTimeProvider = A.Fake<IDateTimeProvider>();
 
-        _orderController = new OrderController(_unitOfWork);
+        _orderController = new OrderController(_unitOfWork, _discountContext, _discountStrategyFactory, _dateTimeProvider);
     }
     
     #region DeleteOrder

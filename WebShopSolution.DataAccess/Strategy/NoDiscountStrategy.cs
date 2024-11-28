@@ -5,7 +5,7 @@ namespace WebShopSolution.DataAccess.Strategy;
 
 public class NoDiscountStrategy : IDiscountStrategy
 {
-    public double CalculatePrice(Product product)
+    public virtual double CalculatePrice(Product product)
     {
         return product.Price;
     }

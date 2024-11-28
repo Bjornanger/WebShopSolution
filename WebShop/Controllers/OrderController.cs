@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 using WebShopSolution.DataAccess.Entities;
+using WebShopSolution.DataAccess.Strategy;
+using WebShopSolution.DataAccess.Strategy.DateTimeHelper;
 using WebShopSolution.DataAccess.UnitOfWork;
 using WebShopSolution.Shared.Interfaces;
 
@@ -12,11 +14,17 @@ namespace WebShop.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DiscountContext _discountContext;
+        private readonly DiscountStrategyFactory _discountStrategyFactory;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
 
-        public OrderController(IUnitOfWork unitOfWork)
+        public OrderController(IUnitOfWork unitOfWork, DiscountContext discountContext, DiscountStrategyFactory discountStrategyFactory, IDateTimeProvider dateTimeProvider)
         {
             _unitOfWork = unitOfWork;
+            _discountContext = discountContext;
+            _discountStrategyFactory = discountStrategyFactory;
+            _dateTimeProvider = dateTimeProvider;
         }
 
 
@@ -43,6 +51,14 @@ namespace WebShop.Controllers
                 {
                     var product = await _unitOfWork.Repository<Product>().GetByIdAsync(orderItem.ProductId);
 
+                    var currentDate = _dateTimeProvider.Now;
+
+                    var discountStrategy = _discountStrategyFactory.GetDiscountStrategy(currentDate);
+                    _discountContext.SetDiscountStrategy(discountStrategy);
+                    product.Price = _discountContext.GetDiscountPeriod(product);
+
+
+
                     if (product is null)
                     {
                         return NotFound("No Products found");
@@ -65,7 +81,7 @@ namespace WebShop.Controllers
 
                 var orderRepository = _unitOfWork.Repository<Order>();
 
-                orderRepository.AddAsync(order);
+               await orderRepository.AddAsync(order);
 
                 await _unitOfWork.CompleteAsync();
                 return Ok(order);

@@ -14,7 +14,7 @@ public class BlackFridayDiscountStrategy : IDiscountStrategy
     }
 
 
-    public double CalculatePrice(Product product)
+    public virtual double CalculatePrice(Product product)
     {
        return product.Price - (product.Price * _discountRate / 100);
     }

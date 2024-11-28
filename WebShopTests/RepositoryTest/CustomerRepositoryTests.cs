@@ -205,7 +205,7 @@ public class CustomerRepositoryTests
         customerToUpdate.FirstName = "Lise-Lotta";
 
         //Act
-        _repository.UpdateAsync(customerToUpdate);
+        await _repository.UpdateAsync(customerToUpdate);
         await _InMemoryContext.SaveChangesAsync();
         var result = await _repository.GetByIdAsync(customerToUpdate.Id);
 
