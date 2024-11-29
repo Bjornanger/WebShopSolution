@@ -105,6 +105,7 @@ public class IStrategyTests
         A.CallTo(() => _unitOfWork.Repository<Product>()).Returns(_productRepository);
         A.CallTo(() => _customerRepository.GetByIdAsync(order.CustomerId)).Returns(order.Customer);
         A.CallTo(() => _productRepository.GetByIdAsync(productInOrder.Id)).Returns(productInOrder);
+
         var blackFriday = new DateTime(2024, 11, 29);//BlackFriday
         A.CallTo(() => _dateTimeProvider.Now).Returns(blackFriday);//Gör så att testet får rätt datum.
         A.CallTo(() => _discountStrategyFactory.GetDiscountStrategy(_dateTimeProvider.Now)).Returns(_discountStrategy); // Hämtar BlackFridayDiscount

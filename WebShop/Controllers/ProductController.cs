@@ -100,8 +100,6 @@ namespace WebShop.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
-
-
             try
             {
                 var productRepository = _unitOfWork.Repository<Product>();
